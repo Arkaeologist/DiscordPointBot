@@ -1,5 +1,12 @@
 var authfile = require('./auth.json');
+var Discord = require('discord.js');
 
-exports.loadAuthDetails = function(detailKey) {
+var loadAuthDetails = function(detailKey) {
   return authfile[detailKey];
 };
+
+exports.loadAuthDetails = loadAuthDetails;
+
+var bot = new Discord.Client();
+
+exports.bot = bot;
