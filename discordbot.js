@@ -7,8 +7,12 @@ var loadAuthDetails = function(detailKey) {
 
 var parseMessage = function(msgContent) {
   var commands = ["!giveToken", "!listToken"];
-  if (commands.includes(msgContent)){
-      return msgContent;
+  var msgContentArray = msgContent.split(" ");
+  if (commands.includes(msgContentArray[0])){
+      if(msgContentArray[0] == "!giveToken" && !(Number.isNaN(Number(msgContentArray[1])))) {
+        msgContentArray[1] = Number(msgContentArray[1]);
+      }
+      return msgContentArray;
   }
 };
 

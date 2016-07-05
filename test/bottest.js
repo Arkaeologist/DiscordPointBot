@@ -13,8 +13,18 @@ describe("Bot", function(){
       var badCommandArg = "!blah";
       var goodCommand = discordBot.parseMessage(goodCommandArg);
       var badCommand = discordBot.parseMessage(badCommandArg);
-      expect(goodCommand).to.equal("!giveToken");
+      expect(goodCommand[0]).to.equal("!giveToken");
       expect(badCommand).to.be.undefined;
+    });
+    it("allows for !giveToken with 2 arguments", function() {
+      var goodCommandArg = "!giveToken 5 user";
+      var goodCommand = discordBot.parseMessage(goodCommandArg);
+      expect(goodCommand).to.deep.equal(["!giveToken", 5, "user"]);
+    });
+    it("allows for !giveToken with 1 arguments", function() {
+      var goodCommandArg = "!giveToken user";
+      var goodCommand = discordBot.parseMessage(goodCommandArg);
+      expect(goodCommand).to.deep.equal(["!giveToken", "user"]);
     });
   });
 });
