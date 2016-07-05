@@ -1,8 +1,8 @@
 {
   "name": "discordtokenbot",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A bot that allows Discord users to give votes to quality content",
-  "main": "bot.js",
+  "main": "discordbot.js",
   "directories": {
     "test": "test"
   },
