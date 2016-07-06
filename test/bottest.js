@@ -27,4 +27,16 @@ describe("Bot", function(){
       expect(goodCommand).to.deep.equal(["!giveToken", "user"]);
     });
   });
+  describe("Give Token Ability Checker", function() {
+    it("checks if the sender can give tokens", function() {
+      roleArray = ["Admins"];
+      canUseGiveToken = discordBot.canUseGiveToken(roleArray);
+      expect(canUseGiveToken).to.be.true;
+    });
+    it("returns false if sender cannot", function() {
+      roleArray = ["Blah"];
+      canUseGiveToken = discordBot.canUseGiveToken(roleArray);
+      expect(canUseGiveToken).to.be.false;
+    });
+  });
 });
