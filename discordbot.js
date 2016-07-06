@@ -11,10 +11,18 @@ var loadAuthDetails = function(detailKey) {
 var parseMessage = function(msgContent) {
   var commands = ["!giveToken", "!listToken", "!help", "!logout", "!restart"];
   var msgContentArray = msgContent.split(" ");
+  if (msgContent.includes(" ") === false) {
+    return msgContentArray.push(msgContent);
+  }
+  msgContentArray = msgContentArray.slice(0, 3);
   if (commands.includes(msgContentArray[0])){
       if(msgContentArray[0] == "!giveToken" &&
-      !(Number.isNaN(Number(msgContentArray[1])))) {
+      !(Number.isNaN(Number(msgContentArray[1]))) &&
+      (Number(msgContentArray[1]) % 1) === 0) {
         msgContentArray[1] = Number(msgContentArray[1]);
+      }
+      else {
+        return false;
       }
       return msgContentArray;
   }
@@ -72,14 +80,11 @@ formatted to a table sorted by number of tokens. \n \n  \
 Admins only commands: \n Use !logout to cause the bot to go \
 offline. \n Use !restart to restart the bot.");
   }
-  else if (parsedMessage[0] == "!logout" &&
-    msg.server.rolesOfUser(msg.author.id).includes(adminRole)) {
+  else if (parsedMessage[0] == "!logout") {
       bot.logout();
   }
-  else if (parsedMessage[0] == "!restart" &&
-    msg.server.rolesOfUser(msg.author.id).includes(adminRole)) {
-      bot.logout();
-      bot.loginWithToken(loadAuthDetails("loginToken"));
+  else if (parsedMessage[0] == "!restart") {
+    console.log("Sorry, not yet.");
   }
 });
 
