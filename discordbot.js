@@ -10,9 +10,12 @@ var loadAuthDetails = function(detailKey) {
 
 var parseMessage = function(msgContent) {
   var commands = ["!giveToken", "!listToken", "!help", "!logout", "!restart"];
-  var msgContentArray = msgContent.split(" ");
+  var msgContentArray = [];
   if (msgContent.includes(" ") === false) {
-    return msgContentArray.push(msgContent);
+    msgContentArray.push(msgContent);
+    if (commands.includes(msgContentArray[0])) {
+      return msgContentArray;
+    }
   }
   msgContentArray = msgContentArray.slice(0, 3);
   if (commands.includes(msgContentArray[0])){
@@ -60,10 +63,6 @@ bot.on("ready", function(){
 
 bot.on("message", function(msg) {
   var parsedMessage = parseMessage(msg.content);
-  console.log(parsedMessage);
-  console.log(msg.author.id);
-  console.log(msg.server.rolesOfUser(msg.author.id));
-  console.log(msg.server.rolesOfUser(msg.author.id).includes(adminRole));
   if (parsedMessage[0] == "!giveToken") {
     giveToken(parsedMessage);
   }
@@ -81,11 +80,18 @@ Admins only commands: \n Use !logout to cause the bot to go \
 offline. \n Use !restart to restart the bot.");
   }
   else if (parsedMessage[0] == "!logout") {
-      bot.logout();
+    bot.logout(function(error){
+      if(error){
+        console.log("Log out failed");
+      }
+      else {
+        console.log("Log out successful");
+      }
+    });
   }
   else if (parsedMessage[0] == "!restart") {
-    console.log("Sorry, not yet.");
-  }
+
+   }
 });
 
 bot.loginWithToken(loadAuthDetails("loginToken"));
