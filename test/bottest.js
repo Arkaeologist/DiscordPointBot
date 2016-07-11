@@ -39,17 +39,17 @@ describe("Bot", function(){
     it("allows a maximum of two arguments for !giveToken", function() {
       var badCommandArg = "!giveToken 2 <@140740133648465920> blah";
       var badCommand = discordBot.parseMessage(badCommandArg);
-      expect(badCommand).to.be.deep.equal(["!giveToken", 2, "<@140740133648465920>"]);
+      expect(badCommand).to.deep.equal(["!giveToken", 2, "<@140740133648465920>"]);
     });
     it("allows a maximum of one argument for !listToken", function() {
       var badCommandArg = "!listToken <@140740133648465920> blah";
       var badCommand = discordBot.parseMessage(badCommandArg);
-      expect(badCommand).to.be.false;
+      expect(badCommand).to.deep.equal(["!listToken", "<@140740133648465920>"]);
     });
     it("does not allow arguments for !help", function() {
       var badCommandArg = "!help blah";
       var badCommand = discordBot.parseMessage(badCommandArg);
-      expect(badCommand).to.be.false;
+      expect(badCommand).to.deep.equal(["!help"]);
     });
   });
   describe("Give Token Permission Checker", function() {
