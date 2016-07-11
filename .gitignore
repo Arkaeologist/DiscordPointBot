@@ -38,6 +38,7 @@ jspm_packages
 
 # Certain JSON files
 auth.json
+tokens.json
 
 # Unit tests containing sensitive information
 test/testloadauth.js

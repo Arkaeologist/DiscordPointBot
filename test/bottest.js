@@ -19,6 +19,7 @@ describe("Bot", function(){
     it("allows for !giveToken with 2 arguments", function() {
       var goodCommandArg = "!giveToken 5 <@140740133648465920>";
       var goodCommand = discordBot.parseMessage(goodCommandArg);
+      console.log(goodCommand);
       expect(goodCommand).to.deep.equal(["!giveToken", 5, "<@140740133648465920>"]);
     });
     it("allows for !giveToken with 1 arguments", function() {
@@ -50,6 +51,9 @@ describe("Bot", function(){
       var badCommandArg = "!help blah";
       var badCommand = discordBot.parseMessage(badCommandArg);
       expect(badCommand).to.deep.equal(["!help"]);
+    });
+    it("does not allow giving tokens to users not on the server", function() {
+
     });
   });
   describe("Give Token Permission Checker", function() {
