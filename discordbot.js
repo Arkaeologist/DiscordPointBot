@@ -1,7 +1,7 @@
 /*jshint esversion: 6 */
 var authFile = require('./auth.json');
 var Discord = require('discord.js');
-var rolesWhichCanGiveToken = ['Admins', 'Mods', 'Judges'];
+var rolesWhichCanGivePoint = ['Admins', 'Mods', 'Judges'];
 var adminRole = 'Admins';
 
 var loadAuthDetails = function(detailKey) {
@@ -9,7 +9,7 @@ var loadAuthDetails = function(detailKey) {
 };
 
 var parseMessage = function(msgContent) {
-  var commands = ['!giveToken', '!listToken', '!help', '!logout', '!restart'];
+  var commands = ['!givePoint', '!listPoint', '!help', '!logout', '!restart'];
   var msgContentArray = [];
   if (msgContent.includes(' ') === false) {
     msgContentArray.push(msgContent);
@@ -20,41 +20,44 @@ var parseMessage = function(msgContent) {
   msgContentArray = msgContent.split(" ");
   msgContentArray = msgContentArray.slice(0, 3);
   if (commands.includes(msgContentArray[0])){
-      if(msgContentArray[0] == '!giveToken') {
+      if(msgContentArray[0] == '!givePoint') {
         if (!(Number.isNaN(Number(msgContentArray[1])))) {
           msgContentArray[1] = Number(msgContentArray[1]);
           return msgContentArray;
         } else if (msgContentArray[1] === "") {
 
         }
-      } else if (msgContentArray[0] == '!listToken') {
+      } else if (msgContentArray[0] == '!listPoint') {
 
+      } else if (msgContentArray[0] == '!help') {
+        msgContentArray = msgContentArray.slice(0, 1);
+        return msgContentArray;
       }
     }
   return false;
 };
 
-var canUseGiveToken = function(roleArray) {
-  for (let role in rolesWhichCanGiveToken) {
-    if (roleArray.includes(rolesWhichCanGiveToken[role])) {
+var canUseGivePoint = function(roleArray) {
+  for (let role in rolesWhichCanGivePoint) {
+    if (roleArray.includes(rolesWhichCanGivePoint[role])) {
       return true;
     }
   }
   return false;
 };
 
-var giveToken = function() {
+var givePoint = function() {
   return null;
 };
 
-var listToken = function() {
+var listPoint = function() {
   return null;
 };
 exports.loadAuthDetails = loadAuthDetails;
 exports.parseMessage = parseMessage;
-exports.canUseGiveToken = canUseGiveToken;
-exports.giveToken = giveToken;
-exports.listToken = listToken;
+exports.canUseGivePoint = canUseGivePoint;
+exports.givePoint = givePoint;
+exports.listPoint = listPoint;
 
 var bot = new Discord.Client();
 
@@ -65,20 +68,20 @@ bot.on('ready', function(){
 
 bot.on('message', function(msg) {
   var parsedMessage = parseMessage(msg.content);
-  if (parsedMessage[0] == '!giveToken') {
-    giveToken(parsedMessage);
-  } else if (parsedMessage[0] == '!listToken') {
-    listToken(parsedMessage);
+  if (parsedMessage[0] == '!givePoint') {
+    givePoint(parsedMessage);
+  } else if (parsedMessage[0] == '!listPoint') {
+    listPoint(parsedMessage);
   } else if (parsedMessage[0] == '!help' || msg.isMentioned(bot.user)) {
-    bot.sendMessage(msg.channel, 'Usage of this bot: \n Use !giveToken ' +
-    '<number of tokens> <@mention user> to give a user that number of tokens' +
-    'The number of tokens argument is optional. \n Use !listToken ' +
-    '<@mention user> to list that user\'s tokens, or optionally ' +
-    'simply use !listToken to list all users\' tokens on the server, ' +
-    'formatted to a table sorted by number of tokens. \n \n  ' +
+    bot.sendMessage(msg.channel, 'Usage of this bot: \n Use !givePoint ' +
+    '<number of points> <@mention user> to give a user that number of Points' +
+    'The number of Points argument is optional. \n Use !listPoint ' +
+    '<@mention user> to list that user\'s points, or optionally ' +
+    'simply use !listPoint to list all users\' points on the server, ' +
+    'formatted to a table sorted by number of points. \n \n  ' +
     'Admins only commands: \n Use !logout to cause the bot to go ' +
     'offline. \n Use !restart to restart the bot. \n \n If an error ' +
-    'is encountered, please report it to sblaplace+tokenbot@gmail.com');
+    'is encountered, please report it to sblaplace+pointbot@gmail.com');
   } else if (parsedMessage[0] == '!logout') {
     bot.logout(function(error){
       if(error){

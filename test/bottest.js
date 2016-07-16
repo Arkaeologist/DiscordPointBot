@@ -16,56 +16,56 @@ describe("Bot", function(){
       expect(goodCommand[0]).to.equal("!help");
       expect(badCommand).to.be.false;
     });
-    it("allows for !giveToken with 2 arguments", function() {
-      var goodCommandArg = "!giveToken 5 <@140740133648465920>";
+    it("allows for !givePoint with 2 arguments", function() {
+      var goodCommandArg = "!givePoint 5 <@140740133648465920>";
       var goodCommand = discordBot.parseMessage(goodCommandArg);
       console.log(goodCommand);
-      expect(goodCommand).to.deep.equal(["!giveToken", 5, "<@140740133648465920>"]);
+      expect(goodCommand).to.deep.equal(["!givePoint", 5, "<@140740133648465920>"]);
     });
-    it("allows for !giveToken with 1 arguments", function() {
-      var goodCommandArg = "!giveToken <@140740133648465920>";
+    it("allows for !givePoint with 1 arguments", function() {
+      var goodCommandArg = "!givePoint <@140740133648465920>";
       var goodCommand = discordBot.parseMessage(goodCommandArg);
-      expect(goodCommand).to.deep.equal(["!giveToken", "<@140740133648465920>"]);
+      expect(goodCommand).to.deep.equal(["!givePoint", "<@140740133648465920>"]);
     });
-    it("does not allow partial tokens", function() {
-      var badCommandArg = "!giveToken 1.772 <@140740133648465920>";
+    it("does not allow partial points", function() {
+      var badCommandArg = "!givePoint 1.772 <@140740133648465920>";
       var badCommand = discordBot.parseMessage(badCommandArg);
       expect(badCommand).to.be.false;
     });
-    it("does not allow non number tokens", function() {
-      var badCommandArg = "!giveToken blah <@140740133648465920>";
+    it("does not allow non number points", function() {
+      var badCommandArg = "!givePoint blah <@140740133648465920>";
       var badCommand = discordBot.parseMessage(badCommandArg);
       expect(badCommand).to.be.false;
     });
-    it("allows a maximum of two arguments for !giveToken", function() {
-      var badCommandArg = "!giveToken 2 <@140740133648465920> blah";
+    it("allows a maximum of two arguments for !givePoint", function() {
+      var badCommandArg = "!givePoint 2 <@140740133648465920> blah";
       var badCommand = discordBot.parseMessage(badCommandArg);
-      expect(badCommand).to.deep.equal(["!giveToken", 2, "<@140740133648465920>"]);
+      expect(badCommand).to.deep.equal(["!givePoint", 2, "<@140740133648465920>"]);
     });
-    it("allows a maximum of one argument for !listToken", function() {
-      var badCommandArg = "!listToken <@140740133648465920> blah";
+    it("allows a maximum of one argument for !listPoint", function() {
+      var badCommandArg = "!listPoint <@140740133648465920> blah";
       var badCommand = discordBot.parseMessage(badCommandArg);
-      expect(badCommand).to.deep.equal(["!listToken", "<@140740133648465920>"]);
+      expect(badCommand).to.deep.equal(["!listPoint", "<@140740133648465920>"]);
     });
     it("does not allow arguments for !help", function() {
       var badCommandArg = "!help blah";
       var badCommand = discordBot.parseMessage(badCommandArg);
       expect(badCommand).to.deep.equal(["!help"]);
     });
-    it("does not allow giving tokens to users not on the server", function() {
+    it("does not allow giving points to users not on the server", function() {
 
     });
   });
-  describe("Give Token Permission Checker", function() {
-    it("checks if the sender can give tokens", function() {
+  describe("Give Point Permission Checker", function() {
+    it("checks if the sender can give points", function() {
       roleArray = ["Admins"];
-      canUseGiveToken = discordBot.canUseGiveToken(roleArray);
-      expect(canUseGiveToken).to.be.true;
+      canUseGivePoint = discordBot.canUseGivePoint(roleArray);
+      expect(canUseGivePoint).to.be.true;
     });
     it("returns false if sender cannot", function() {
       roleArray = ["Blah"];
-      canUseGiveToken = discordBot.canUseGiveToken(roleArray);
-      expect(canUseGiveToken).to.be.false;
+      canUseGivePoint = discordBot.canUseGivePoint(roleArray);
+      expect(canUseGivePoint).to.be.false;
     });
   });
   describe("User List Builder", function() {
