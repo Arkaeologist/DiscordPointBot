@@ -1,3 +1,7 @@
 language: node_js
 node_js:
-  - "node"
+- node
+before_install:
+- openssl aes-256-cbc -K $encrypted_adcf5152711f_key -iv $encrypted_adcf5152711f_iv
+  -in secrets.tar.enc -out secrets.tar -d
+- tar xvf secrets.tar
