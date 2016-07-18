@@ -26,6 +26,7 @@ var parseMessage = function(msgContent) {
   msgContentArray = msgContent.split(" ");
   if (commands.includes(msgContentArray[0])){
     msgContentArrayParsed.push(msgContentArray[0]);
+    msgContentArray = msgContentArray.slice(1);
     for (let pointValue in msgContentArray) {
       pointValue = Number(pointValue);
       if (!(isNaN(pointValue)) && pointValue % 1 === 0) {
@@ -68,10 +69,10 @@ bot.on('ready', function(){
 
 bot.on('message', function(msg) {
   var parsedMessage = parseMessage(msg.content);
-  if (parsedMessage[0] == givePoint) {
-    givePoint(parsedMessage);
+  if (parsedMessage[0] == givePoint && canUseGivePoint(msg.server.rolesOfUser(msg.author))) {
+    givePoint(parsedMessage, msg.mentions);
   } else if (parsedMessage[0] == listPoint) {
-    listPoint(parsedMessage);
+    listPoint(parsedMessage, msg.mentions);
   } else if (parsedMessage[0] == help || msg.isMentioned(bot.user)) {
     bot.sendMessage(msg.channel, 'Usage of this bot: \n Use !givePoint ' +
     '<number of points> <@mention user> to give a user that number of Points' +
