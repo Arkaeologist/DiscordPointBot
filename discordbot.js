@@ -1,4 +1,5 @@
 /*jshint esversion: 6 */
+var pointsFile = ('./points.json');
 var authFile = require('./auth.json');
 var Discord = require('discord.js');
 var rolesWhichCanGivePoint = ['Admins', 'Mods', 'Judges'];
