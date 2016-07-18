@@ -3,8 +3,8 @@ var authFile = require('./auth.json');
 var Discord = require('discord.js');
 var rolesWhichCanGivePoint = ['Admins', 'Mods', 'Judges'];
 var adminRole = 'Admins';
-var givePoint = '!givePoint';
-var listPoint = '!listPoint';
+var givePointCommand = '!givePoint';
+var listPointCommand = '!listPoint';
 var help = '!help';
 var logout = '!logout';
 var restart = '!restart';
@@ -14,7 +14,7 @@ var loadAuthDetails = function(detailKey) {
 };
 
 var parseMessage = function(msgContent) {
-  var commands = [givePoint, listPoint, help, logout, restart];
+  var commands = [givePointCommand, listPointCommand, help, logout, restart];
   var msgContentArray = [];
   var msgContentArrayParsed = [];
   if (msgContent.includes(' ') === false) {
@@ -24,15 +24,14 @@ var parseMessage = function(msgContent) {
     }
   }
   msgContentArray = msgContent.split(' ');
+  console.log(msgContentArray);
   if (commands.includes(msgContentArray[0])){
     msgContentArrayParsed.push(msgContentArray[0]);
-    msgContentArray = msgContentArray.slice(1);
-    console.log(msgContentArray);
-    console.log(msgContentArrayParsed);
     for (var pointValue in msgContentArray) {
       var numericalPointValue = Number(msgContentArray[pointValue]);
-      console.log(numericalPointValue);
-      if (!(Number.isNaN(numericalPointValue)) && numericalPointValue % 1 === 0) {
+      if (!(Number.isNaN(numericalPointValue)) &&
+      numericalPointValue % 1 === 0 &&
+      msgContentArray[0] != listPointCommand) {
         msgContentArrayParsed.push(numericalPointValue);
       }
     }
