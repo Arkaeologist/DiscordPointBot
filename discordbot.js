@@ -23,17 +23,20 @@ var parseMessage = function(msgContent) {
       return msgContentArrayParsed;
     }
   }
-  msgContentArray = msgContent.split(" ");
+  msgContentArray = msgContent.split(' ');
   if (commands.includes(msgContentArray[0])){
     msgContentArrayParsed.push(msgContentArray[0]);
     msgContentArray = msgContentArray.slice(1);
-    for (let pointValue in msgContentArray) {
-      pointValue = Number(pointValue);
-      if (!(isNaN(pointValue)) && pointValue % 1 === 0) {
-        msgContentArrayParsed.push(pointValue);
+    console.log(msgContentArray);
+    console.log(msgContentArrayParsed);
+    for (var pointValue in msgContentArray) {
+      var numericalPointValue = Number(msgContentArray[pointValue]);
+      console.log(numericalPointValue);
+      if (!(Number.isNaN(numericalPointValue)) && numericalPointValue % 1 === 0) {
+        msgContentArrayParsed.push(numericalPointValue);
       }
-      return msgContentArrayParsed;
     }
+    return msgContentArrayParsed;
   }
   return false;
 };
