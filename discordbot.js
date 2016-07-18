@@ -3,37 +3,37 @@ var authFile = require('./auth.json');
 var Discord = require('discord.js');
 var rolesWhichCanGivePoint = ['Admins', 'Mods', 'Judges'];
 var adminRole = 'Admins';
+var givePoint = '!givePoint';
+var listPoint = '!listPoint';
+var help = '!help';
+var logout = '!logout';
+var restart = '!restart';
 
 var loadAuthDetails = function(detailKey) {
-    return authFile[detailKey];
+  return authFile[detailKey];
 };
 
 var parseMessage = function(msgContent) {
-  var commands = ['!givePoint', '!listPoint', '!help', '!logout', '!restart'];
+  var commands = [givePoint, listPoint, help, logout, restart];
   var msgContentArray = [];
+  var msgContentArrayParsed = [];
   if (msgContent.includes(' ') === false) {
-    msgContentArray.push(msgContent);
+    msgContentArrayParsed.push(msgContent);
     if (commands.includes(msgContentArray[0])) {
-      return msgContentArray;
+      return msgContentArrayParsed;
     }
   }
   msgContentArray = msgContent.split(" ");
-  msgContentArray = msgContentArray.slice(0, 3);
   if (commands.includes(msgContentArray[0])){
-      if(msgContentArray[0] == '!givePoint') {
-        if (!(Number.isNaN(Number(msgContentArray[1])))) {
-          msgContentArray[1] = Number(msgContentArray[1]);
-          return msgContentArray;
-        } else if (msgContentArray[1] === "") {
-
-        }
-      } else if (msgContentArray[0] == '!listPoint') {
-
-      } else if (msgContentArray[0] == '!help') {
-        msgContentArray = msgContentArray.slice(0, 1);
-        return msgContentArray;
+    msgContentArrayParsed.push(msgContentArray[0]);
+    for (let pointValue in msgContentArray) {
+      pointValue = Number(pointValue);
+      if (!(isNaN(pointValue)) && pointValue % 1 === 0) {
+        msgContentArrayParsed.push(pointValue);
       }
+      return msgContentArrayParsed;
     }
+  }
   return false;
 };
 
@@ -62,17 +62,17 @@ exports.listPoint = listPoint;
 var bot = new Discord.Client();
 
 bot.on('ready', function(){
-    console.log('I\'m ready!');
-    bot.setStatus('online', '!help for help');
-  });
+  console.log('I\'m ready!');
+  bot.setStatus('online', '!help for help');
+});
 
 bot.on('message', function(msg) {
   var parsedMessage = parseMessage(msg.content);
-  if (parsedMessage[0] == '!givePoint') {
+  if (parsedMessage[0] == givePoint) {
     givePoint(parsedMessage);
-  } else if (parsedMessage[0] == '!listPoint') {
+  } else if (parsedMessage[0] == listPoint) {
     listPoint(parsedMessage);
-  } else if (parsedMessage[0] == '!help' || msg.isMentioned(bot.user)) {
+  } else if (parsedMessage[0] == help || msg.isMentioned(bot.user)) {
     bot.sendMessage(msg.channel, 'Usage of this bot: \n Use !givePoint ' +
     '<number of points> <@mention user> to give a user that number of Points' +
     'The number of Points argument is optional. \n Use !listPoint ' +
@@ -82,7 +82,7 @@ bot.on('message', function(msg) {
     'Admins only commands: \n Use !logout to cause the bot to go ' +
     'offline. \n Use !restart to restart the bot. \n \n If an error ' +
     'is encountered, please report it to sblaplace+pointbot@gmail.com');
-  } else if (parsedMessage[0] == '!logout') {
+  } else if (parsedMessage[0] == logout) {
     bot.logout(function(error){
       if(error){
         console.log('Log out failed');
@@ -90,7 +90,7 @@ bot.on('message', function(msg) {
         console.log('Log out successful');
       }
     });
-  } else if (parsedMessage[0] == '!restart') {
+  } else if (parsedMessage[0] == restart) {
 
   }
 });
