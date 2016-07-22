@@ -1,7 +1,8 @@
 /*jshint esversion: 6 */
-var pointsFile = ('./points.json');
+var pointsFile = './points.json';
 var authFile = require('./auth.json');
 var Discord = require('discord.js');
+var jsonfile = require('jsonfile');
 var rolesWhichCanGivePoint = ['Admins', 'Mods', 'Judges'];
 var adminRole = 'Admins';
 var givePointCommand = '!givePoint';
@@ -25,7 +26,6 @@ var parseMessage = function(msgContent) {
     }
   }
   msgContentArray = msgContent.split(' ');
-  console.log(msgContentArray);
   if (commands.includes(msgContentArray[0])){
     msgContentArrayParsed.push(msgContentArray[0]);
     for (var pointValue in msgContentArray) {
@@ -50,13 +50,34 @@ var canUseGivePoint = function(roleArray) {
   return false;
 };
 
-var givePoint = function() {
-  return null;
+var givePoint = function(server, mentions, pointsArray) {
+  // pointsArray is an optional argument in the case of only one mention
+  pointsArray = pointsArray.slice(1) || [1];
+  jsonfile.readFile(pointsFile, function(err, serverList) {
+    console.error(err);
+    for (let i in mentions) {
+      var updatedUser = mentions[i].points += pointsArray[i];
+      bot.server.members.update(mentions[i], updatedUser);
+    }
+    serverList = bot.servers;
+    jsonfile.writeFile(pointsFile, bot.servers, function(err) {
+      console.error(err);
+    });
+  });
 };
 
 var listPoint = function() {
   return null;
 };
+
+var replace = function(key, value) {
+  if (key === 'client') {
+    console.log('replaced');
+    return undefined;
+  }
+  return value;
+};
+
 exports.loadAuthDetails = loadAuthDetails;
 exports.parseMessage = parseMessage;
 exports.canUseGivePoint = canUseGivePoint;
@@ -68,12 +89,16 @@ var bot = new Discord.Client();
 bot.on('ready', function(){
   console.log('I\'m ready!');
   bot.setStatus('online', '!help for help');
+  jsonfile.writeFile(pointsFile, bot.servers, {replacer: replace}, function(err) {
+    console.error(err);
+  });
 });
 
 bot.on('message', function(msg) {
   var parsedMessage = parseMessage(msg.content);
   if (parsedMessage[0] == givePoint && canUseGivePoint(msg.server.rolesOfUser(msg.author))) {
     givePoint(parsedMessage, msg.mentions);
+    bot.sendMessage(msg.channel, '');
   } else if (parsedMessage[0] == listPoint) {
     listPoint(parsedMessage, msg.mentions);
   } else if (parsedMessage[0] == help || msg.isMentioned(bot.user)) {

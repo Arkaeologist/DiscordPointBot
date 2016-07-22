@@ -55,13 +55,16 @@ describe("Bot", function(){
       expect(canUseGivePoint).to.be.true;
     });
     it("returns false if sender cannot", function() {
-      roleArray = ["Blah"];
+      roleArray = ['Blah'];
       canUseGivePoint = discordBot.canUseGivePoint(roleArray);
       expect(canUseGivePoint).to.be.false;
     });
   });
-  describe("User List Builder", function() {
-    it("builds a list of admins", function() {
+  describe("Token Giver", function() {
+    pointsArray = [5, 7];
+    mentionsArray = ['109134866209095680', '140740133648465920'];
+    it("pulls user objects from json file", function() {
+
 
     });
   });
