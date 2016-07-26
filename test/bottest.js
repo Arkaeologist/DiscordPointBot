@@ -1,6 +1,8 @@
 var expect = require("chai").expect;
 var discordBot = require("../discordbot");
 var Discord = require('discord.js');
+var jsonfile = require('jsonfile');
+var pointsFile = './points.json';
 
 describe("Bot", function(){
   /* describe("User List Builder", function() {
@@ -50,7 +52,7 @@ describe("Bot", function(){
   });
   describe("#canUseGivePoint()", function() {
     it("checks if the sender can give points", function() {
-      roleArray = ["Admins"];
+      roleArray = ['Admins', 'blah'];
       canUseGivePoint = discordBot.canUseGivePoint(roleArray);
       expect(canUseGivePoint).to.be.true;
     });
@@ -61,10 +63,9 @@ describe("Bot", function(){
     });
   });
   describe("#givePoint()", function() {
-    pointsArray = [5, 7];
-    mentionsArray = ['109134866209095680', '140740133648465920'];
+    var pointsArray = [5, 7];
+    var mentionsArray = ['109134866209095680', '140740133648465920'];
     it("adds points to a user", function() {
-      
 
     });
   });
