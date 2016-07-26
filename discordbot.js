@@ -145,6 +145,26 @@ bot.on('ready', function(){
   updateServers();
 });
 
+bot.on('serverMemberUpdated', function(){
+  updateServers();
+});
+
+bot.on('serverNewMember', function(){
+  updateServers();
+});
+
+bot.on('serverUpdated', function(){
+  updateServers();
+});
+
+bot.on('serverCreated', function(){
+  updateServers();
+});
+
+bot.on('serverCreated', function(){
+  updateServers();
+});
+
 bot.on('message', function(msg) {
   var parsedMessage = parseMessage(msg.content);
   var msgRoles = [];
