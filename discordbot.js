@@ -72,7 +72,7 @@ var givePoint = function(server, channel, mentions, pointsArray) {
         serverList[server.id].users[mentions[i].id].points += pointsArray[i];
         pointsMessage = pointsMessage.concat('Gave ' + pointsArray[i] + ' ' +
           pointName + 's to ' +
-          serverList[server.id].users[mentions[i].id].name);
+          serverList[server.id].users[mentions[i].id].name + ' \n');
       }
       bot.sendMessage(channel, pointsMessage);
       jsonfile.writeFile(pointsFile, serverList, function(err) {

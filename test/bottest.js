@@ -63,10 +63,10 @@ describe("Bot", function(){
     });
   });
   describe("#givePoint()", function() {
-    var pointsArray = [5, 7];
-    var mentionsArray = ['109134866209095680', '140740133648465920'];
     it("adds points to a user", function() {
-
+      var pointsArray = ['!givePoint', 5, 7];
+      var mentionsArray = ['109134866209095680', '140740133648465920'];
+      discordBot.givePoint(msg.server, msg.channel, msg.mentions, parsedMessage);
     });
   });
 });
