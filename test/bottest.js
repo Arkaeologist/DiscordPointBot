@@ -7,7 +7,7 @@ describe("Bot", function(){
     it("loads Cache of users from server", function() {
     });
   }); */
-  describe("Message Parser", function(){
+  describe("#parseMessage()", function(){
     it("only accepts commands from array of commands", function() {
       var goodCommandArg = "!help";
       var badCommandArg = "!blah";
@@ -48,7 +48,7 @@ describe("Bot", function(){
       expect(badCommand).to.deep.equal(["!help"]);
     });
   });
-  describe("Give Point Permission Checker", function() {
+  describe("#canUseGivePoint()", function() {
     it("checks if the sender can give points", function() {
       roleArray = ["Admins"];
       canUseGivePoint = discordBot.canUseGivePoint(roleArray);
@@ -60,11 +60,11 @@ describe("Bot", function(){
       expect(canUseGivePoint).to.be.false;
     });
   });
-  describe("Token Giver", function() {
+  describe("#givePoint()", function() {
     pointsArray = [5, 7];
     mentionsArray = ['109134866209095680', '140740133648465920'];
-    it("pulls user objects from json file", function() {
-
+    it("adds points to a user", function() {
+      
 
     });
   });

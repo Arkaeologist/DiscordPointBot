@@ -1,8 +1,8 @@
 /*jshint esversion: 6 */
-var pointsFile = './points.json';
-var authFile = require('./auth.json');
 var Discord = require('discord.js');
 var jsonfile = require('jsonfile');
+var pointsFile = './points.json';
+var authFile = require('./auth.json');
 var rolesWhichCanGivePoint = ['Admins', 'Mods', 'Judges'];
 var adminRole = 'Admins';
 var givePointCommand = '!givePoint';
@@ -10,6 +10,16 @@ var listPointCommand = '!listPoint';
 var help = '!help';
 var logout = '!logout';
 var restart = '!restart';
+
+User = function(username){
+  this.points = 0;
+  this.name =  username;
+};
+
+Server = function(servername){
+  this.users = {};
+  this.name = servername;
+};
 
 var loadAuthDetails = function(detailKey) {
   return authFile[detailKey];
@@ -66,16 +76,14 @@ var givePoint = function(server, mentions, pointsArray) {
   });
 };
 
-var listPoint = function() {
-  return null;
-};
+var listPoint = function(mentions, server) {
+  pointsArray = pointsArray.slice(1) || server.members;
+  jsonfile.readFile(pointsFile, function(err, serverList) {
+    console.error(err);
+    for (let i in mentions) {
 
-var replace = function(key, value) {
-  if (key === 'client') {
-    console.log('replaced');
-    return undefined;
-  }
-  return value;
+    }
+  });
 };
 
 exports.loadAuthDetails = loadAuthDetails;
@@ -87,10 +95,28 @@ exports.listPoint = listPoint;
 var bot = new Discord.Client();
 
 bot.on('ready', function(){
-  console.log('I\'m ready!');
-  bot.setStatus('online', '!help for help');
-  jsonfile.writeFile(pointsFile, bot.servers, {replacer: replace}, function(err) {
-    console.error(err);
+  jsonfile.readFile(pointsFile, function(err, serverList) {
+    var serverListEntry;
+    for (var serverItem in bot.servers) {
+      if ( !(serverItem.id in serverList)) {
+        serverList[serverItem.id] = new Server(serverItem.name);
+      } else {
+        serverList[serverItem.id].name = serverItem.name;
+      }
+      serverListEntry = serverList[serverItem.id];
+      for (var userItem in serverItem.members) {
+        if ( !(userItem.id in serverListEntry)) {
+          serverListEntry[userItem.id] = new User(userItem.name);
+        } else {
+          serverListEntry[userItem.id].name = userItem.name;
+        }
+      }
+    }
+    jsonfile.writeFile(pointsFile, serverList, function(err) {
+      console.error(err);
+      console.log('I\'m ready!');
+      bot.setStatus('online', '!help for help');
+    });
   });
 });
 
@@ -102,12 +128,12 @@ bot.on('message', function(msg) {
   } else if (parsedMessage[0] == listPoint) {
     listPoint(parsedMessage, msg.mentions);
   } else if (parsedMessage[0] == help || msg.isMentioned(bot.user)) {
-    bot.sendMessage(msg.channel, 'Usage of this bot: \n Use !givePoint ' +
+    bot.sendMessage(msg.channel, 'Usage of this bot: \n Use ' + givePoint + ' ' +
     '<number of points> <@mention user> to give a user that number of Points' +
-    'The number of Points argument is optional. \n Use !listPoint ' +
+    'The number of Points argument is optional. \n Use ' + listPoint + ' '+
     '<@mention user> to list that user\'s points, or optionally ' +
-    'simply use !listPoint to list all users\' points on the server, ' +
-    'formatted to a table sorted by number of points. \n \n  ' +
+    'simply use ' + listPoint + ' to list all users\' points on the server, ' +
+    'sorted by number of points. \n \n  ' +
     'Admins only commands: \n Use !logout to cause the bot to go ' +
     'offline. \n Use !restart to restart the bot. \n \n If an error ' +
     'is encountered, please report it to sblaplace+pointbot@gmail.com');
