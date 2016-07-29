@@ -12,12 +12,15 @@ var logout = '!logout';
 var restart = '!restart';
 var pointName = 'point';
 
+//User class for use in storing point values
 User = function(username){
   this.points = 0;
   this.name =  username;
 };
 
+//Server class for use in storing User
 Server = function(servername){
+  //Map Users to id values
   this.users = {};
   this.name = servername;
 };
@@ -26,6 +29,9 @@ var loadAuthDetails = function(detailKey) {
   return authFile[detailKey];
 };
 
+/*Takes a string, and returns an array with the first element as a string representing
+
+*/
 var parseMessage = function(msgContent) {
   var commands = [givePointCommand, listPointCommand, help, logout, restart];
   var msgContentArray = [];
@@ -132,6 +138,7 @@ var updateServers = function() {
   });
 };
 
+//Export all functions for use in unit tests
 exports.loadAuthDetails = loadAuthDetails;
 exports.parseMessage = parseMessage;
 exports.canUseGivePoint = canUseGivePoint;
@@ -141,6 +148,9 @@ exports.updateServers = updateServers;
 
 var bot = new Discord.Client();
 
+/*Update the points.json file any time something on the server changes,
+and when the bot comes online.
+*/
 bot.on('ready', function(){
   updateServers();
 });
@@ -184,8 +194,8 @@ bot.on('message', function(msg) {
     listPointCommand + ' '+
     '<@mention user> to list that user\'s points, or optionally ' +
     'simply use ' + listPointCommand +
-    ' to list all users\' points on the server, ' +
-    'sorted by number of points. \n \n  ' +
+    ' to list all users\'s ' + pointName + 's on the server, ' +
+    'sorted by number of ' + pointName + 's \n \n  ' +
     'Admins only commands: \n Use !logout to cause the bot to go ' +
     'offline. \n Use !restart to restart the bot. \n \n If an error ' +
     'is encountered, please report it to sblaplace+pointbot@gmail.com');
