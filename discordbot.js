@@ -11,6 +11,7 @@ var help = '!help';
 var logout = '!logout';
 var restart = '!restart';
 var pointName = 'point';
+var judgesRoleID = 'Judges';
 
 //User class for use in storing point values
 User = function(username){
@@ -29,13 +30,15 @@ var loadAuthDetails = function(detailKey) {
   return authFile[detailKey];
 };
 
-/*Takes a string, and returns an array with the first element as a string representing
-
+/* Takes a string, and returns an array with the first element as a string
+of the command, and the rest as all the numbers in the message, to be
+passed to givePoint()
 */
 var parseMessage = function(msgContent) {
   var commands = [givePointCommand, listPointCommand, help, logout, restart];
   var msgContentArray = [];
   var msgContentArrayParsed = [];
+  //If the message only contains one word, and that word is a valid command, return it
   if (msgContent.includes(' ') === false) {
     msgContentArrayParsed.push(msgContent);
     if (commands.includes(msgContentArray[0])) {
@@ -58,6 +61,7 @@ var parseMessage = function(msgContent) {
   return false;
 };
 
+//Checks if a user has any roles that match roles that can give points
 var canUseGivePoint = function(roleArray) {
   for (let role in rolesWhichCanGivePoint) {
     if (roleArray.includes(rolesWhichCanGivePoint[role])) {
@@ -71,14 +75,19 @@ var givePoint = function(server, channel, mentions, pointsArray) {
   // pointsArray is an optional argument in the case of only one mention
   pointsArray = pointsArray.slice(1) || [1];
   var pointsMessage = '';
+  var userMentioned;
   if (pointsArray.length === mentions.length) {
     jsonfile.readFile(pointsFile, function(err, serverList) {
       console.error(err);
       for (let i in mentions) {
-        serverList[server.id].users[mentions[i].id].points += pointsArray[i];
+        userMentioned = serverList[server.id].users[mentions[i].id];
+        userMentioned.points += pointsArray[i];
         pointsMessage = pointsMessage.concat('Gave ' + pointsArray[i] + ' ' +
           pointName + 's to ' +
           serverList[server.id].users[mentions[i].id].name + ' \n');
+        if (userMentioned.points >= 100) {
+          mentions[i].addTo(judgesRoleID);
+        }
       }
       bot.sendMessage(channel, pointsMessage);
       jsonfile.writeFile(pointsFile, serverList, function(err) {
@@ -110,30 +119,56 @@ var listPoint = function(server, channel, mentions) {
   });
 };
 
+//Updates the local jsonfile used to store Servers and Users
 var updateServers = function() {
   jsonfile.readFile(pointsFile, function(err, serverList) {
+    var discordServerID;
+    var discordServerName;
     var serverListEntry;
+    var memberID;
+    var memberName;
+
+    //For every server the bot has cached
     for (let i = 0; i < bot.servers.length; i++) {
-      if ( !(bot.servers[i].id in serverList)) {
-        serverList[bot.servers[i].id] = new Server(bot.servers[i].name);
+
+      //Assign the variable for that server's name and id
+      discordServerID = bot.servers[i].id;
+      discordServerName = bot.servers[i].name;
+
+      /* If the server isn't in the json file, add it. Otherwise,
+      *  update the name.
+      */
+      if ( !(discordServerID in serverList)) {
+        serverList[discordServerID] = new Server(discordServerName);
       } else {
-        serverList[bot.servers[i].id].name = bot.servers[i].name;
+        serverList[discordServerID].name = discordServerName;
       }
-      serverListEntry = serverList[bot.servers[i].id];
+
+      // Assign the variable for the Server object to be stored locally
+      serverListEntry = serverList[discordServerID];
+
+      //For every cached member in the server
       for (let j = 0; j < bot.servers[i].members.length; j++) {
-        if ( !(bot.servers[i].members[j].id in serverListEntry.users)) {
-          serverListEntry.users[bot.servers[i].members[j].id] =
-            new User(bot.servers[i].members[j].name);
+
+        //Assign their name and ID variables
+        memberID = bot.servers[i].members[j].id;
+        memberName = bot.servers[i].members[j].name;
+
+        /* If the user isn't in the points file,
+        *  add them, and if they are in it, then update their name
+        */
+        if ( !(memberID in serverListEntry.users)) {
+          serverListEntry.users[memberID] = new User(memberName);
         } else {
-          serverListEntry.users[bot.servers[i].members[j].id].name =
-            bot.servers[i].members[j].name;
+          serverListEntry.users[memberID].name = memberName;
         }
       }
     }
+
+    //Write to the file
     jsonfile.writeFile(pointsFile, serverList, function(err) {
       console.error(err);
-      console.log('I\'m ready!');
-      bot.setStatus('online', '!help for help');
+
     });
   });
 };
@@ -148,13 +183,21 @@ exports.updateServers = updateServers;
 
 var bot = new Discord.Client();
 
-/*Update the points.json file any time something on the server changes,
-and when the bot comes online.
+/* When the bot has successfully logged in, update the local points file,
+*  log to the console that we're ready, and then set the bot's status to
+*  online, and the game it's playing to a prompt for how to use the bot.
 */
 bot.on('ready', function(){
   updateServers();
+  console.log('I\'m ready!');
+  bot.setStatus('online', '!help for help');
 });
 
+
+/* Listen for any event in which a new member or server is added, or has
+*  changed it's name. On these events, update the locally stored points
+*  file.
+*/
 bot.on('serverMemberUpdated', function(){
   updateServers();
 });
