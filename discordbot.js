@@ -173,6 +173,51 @@ var updateServers = function() {
   });
 };
 
+//Decide which command to run
+var chooseCommand = function(msg) {
+  var parsedMessage = parseMessage(msg.content);
+  var msgRoles = [];
+
+  // For every role the message sender has, add it's name to an array
+  for (let role in msg.server.rolesOfUser(msg.author)) {
+    msgRoles.push(msg.server.rolesOfUser(msg.author)[role].name);
+  }
+
+  /* Based on the first word of the message, choose a command to run,
+  *  making sure that the user is allowed to use it. Additionally, send the
+  *  help message if the bot is mentioned.
+  */
+  if (parsedMessage[0] == givePointCommand && canUseGivePoint(msgRoles)) {
+    givePoint(msg.server, msg.channel, msg.mentions, parsedMessage);
+  } else if (parsedMessage[0] == listPointCommand) {
+    listPoint(msg.server, msg.channel, msg.mentions);
+  } else if (parsedMessage[0] == help || msg.isMentioned(bot.user)) {
+    bot.sendMessage(msg.channel, 'Usage of this bot: \n Use ' +
+    givePointCommand + ' ' +
+    '<number of points> <@mention user> to give a user that number of ' +
+    pointName + 's. ' +
+    'The number of ' + pointName + 's argument is optional. \n Use ' +
+    listPointCommand + ' '+
+    '<@mention user> to list that user\'s points, or optionally ' +
+    'simply use ' + listPointCommand +
+    ' to list all users\'s ' + pointName + 's on the server, ' +
+    'sorted by number of ' + pointName + 's \n \n  ' +
+    'Admins only commands: \n Use !logout to cause the bot to go ' +
+    'offline. \n Use !restart to restart the bot. \n \n If an error ' +
+    'is encountered, please report it to sblaplace+pointbot@gmail.com');
+  } else if (parsedMessage[0] == logout) {
+    bot.logout(function(error){
+      if(error){
+        console.log('Log out failed');
+      } else {
+        console.log('Log out successful');
+      }
+    });
+  } else if (parsedMessage[0] == restart) {
+
+  }
+};
+
 //Export all functions for use in unit tests
 exports.loadAuthDetails = loadAuthDetails;
 exports.parseMessage = parseMessage;
@@ -180,6 +225,7 @@ exports.canUseGivePoint = canUseGivePoint;
 exports.givePoint = givePoint;
 exports.listPoint = listPoint;
 exports.updateServers = updateServers;
+exports.chooseCommand = chooseCommand;
 
 var bot = new Discord.Client();
 
@@ -218,41 +264,10 @@ bot.on('serverCreated', function(){
   updateServers();
 });
 
+// Listen for messages
 bot.on('message', function(msg) {
-  var parsedMessage = parseMessage(msg.content);
-  var msgRoles = [];
-  for (let role in msg.server.rolesOfUser(msg.author)) {
-    msgRoles.push(msg.server.rolesOfUser(msg.author)[role].name);
-  }
-  if (parsedMessage[0] == givePointCommand && canUseGivePoint(msgRoles)) {
-    givePoint(msg.server, msg.channel, msg.mentions, parsedMessage);
-  } else if (parsedMessage[0] == listPointCommand) {
-    listPoint(msg.server, msg.channel, msg.mentions);
-  } else if (parsedMessage[0] == help || msg.isMentioned(bot.user)) {
-    bot.sendMessage(msg.channel, 'Usage of this bot: \n Use ' +
-    givePointCommand + ' ' +
-    '<number of points> <@mention user> to give a user that number of ' +
-    pointName + 's. ' +
-    'The number of ' + pointName + 's argument is optional. \n Use ' +
-    listPointCommand + ' '+
-    '<@mention user> to list that user\'s points, or optionally ' +
-    'simply use ' + listPointCommand +
-    ' to list all users\'s ' + pointName + 's on the server, ' +
-    'sorted by number of ' + pointName + 's \n \n  ' +
-    'Admins only commands: \n Use !logout to cause the bot to go ' +
-    'offline. \n Use !restart to restart the bot. \n \n If an error ' +
-    'is encountered, please report it to sblaplace+pointbot@gmail.com');
-  } else if (parsedMessage[0] == logout) {
-    bot.logout(function(error){
-      if(error){
-        console.log('Log out failed');
-      } else {
-        console.log('Log out successful');
-      }
-    });
-  } else if (parsedMessage[0] == restart) {
-
-  }
+    chooseCommand(msg);
 });
 
+// Log in to Discord
 bot.loginWithToken(loadAuthDetails('loginToken'));
