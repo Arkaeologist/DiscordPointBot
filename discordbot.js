@@ -216,7 +216,9 @@ var listPoint = function(server, channel, mentions) {
       'sorted by number of ' + pointName + 's \n \n  ' +
       'Admins only commands: \n Use !logout to cause the bot to go ' +
       'offline. \n Use !restart to restart the bot. \n \n If an error ' +
-      'is encountered, please report it to sblaplace+pointbot@gmail.com');
+      'is encountered, please report it to sblaplace+pointbot@gmail.com \n' +
+      'To see the source code, please visit ' +
+      ' https://github.com/sblaplace/DiscordPointBot');
     } else if (parsedMessage[0] == logout) {
       bot.logout(function(error){
         if(error){
