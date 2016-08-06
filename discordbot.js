@@ -12,16 +12,32 @@ var logout = '!logout';
 var restart = '!restart';
 var pointName = 'point';
 var judgesRoleID = 'Judges';
+var helpMessage = 'Usage of this bot: \n Use ' +
+givePointCommand + ' ' +
+'<number of points> <@mention user> to give a user that number of ' +
+pointName + 's. ' +
+'The number of ' + pointName + 's argument is optional. \n Use ' +
+listPointCommand + ' '+
+'<@mention user> to list that user\'s points, or optionally ' +
+'simply use ' + listPointCommand +
+' to list all users\'s ' + pointName + 's on the server, ' +
+'sorted by number of ' + pointName + 's \n \n  ' +
+'Admins only commands: \n Use !logout to cause the bot to go ' +
+'offline. \n Use !restart to restart the bot. \n \n If an error ' +
+'is encountered, please report it to sblaplace+pointbot@gmail.com \n' +
+'To see the source code, please visit ' +
+' https://github.com/sblaplace/DiscordPointBot';
 
-//User class for use in storing point values
+
+// User class for use in storing point values
 User = function(username){
   this.points = 0;
   this.name =  username;
 };
 
-//Server class for use in storing User
+// Server class for use in storing User
 Server = function(servername){
-  //Map Users to id values
+  // Map Users to id values
   this.users = {};
   this.name = servername;
 };
@@ -31,22 +47,33 @@ var loadAuthDetails = function(detailKey) {
 };
 
 /* Takes a string, and returns an array with the first element as a string
-of the command, and the rest as all the numbers in the message, to be
-passed to givePoint()
+*  of the command, and the rest as all the numbers in the message, to be
+*  passed to givePoint()
 */
 var parseMessage = function(msgContent) {
   var commands = [givePointCommand, listPointCommand, help, logout, restart];
   var msgContentArray = [];
   var msgContentArrayParsed = [];
-  //If the message only contains one word, and that word is a valid command, return it
+
+  /* If the message only contains one word, and that word is a valid command,
+  *  return that in an array
+  */
   if (msgContent.includes(' ') === false) {
     msgContentArrayParsed.push(msgContent);
     if (commands.includes(msgContentArray[0])) {
       return msgContentArrayParsed;
     }
   }
+
+  /* Split the string of the content of the mssage on every space. The
+  *  first item in the array is a command, and is checked against the
+  *  array of commands to ensure this. If it isn't, then false is returned,
+  *  so that the check later on in chooseCommand will work. Otherwise, the
+  *  other items are then checked to make sure that they're a positive integer.
+  *  If they are, they're put into the array which is returned.
+  */
   msgContentArray = msgContent.split(' ');
-  if (commands.includes(msgContentArray[0])){
+  if (commands.includes(msgContentArray[0])) {
     msgContentArrayParsed.push(msgContentArray[0]);
     for (var pointValue in msgContentArray) {
       var numericalPointValue = Number(msgContentArray[pointValue]);
@@ -89,23 +116,21 @@ var givePoint = function(server, channel, mentions, pointsArray) {
         pointName + 's to ' +
         serverList[server.id].users[mentions[i].id].name + ' \n');
         /*if (userMentioned.points >= 100) {
-          mentions[i].addTo(judgesRoleID);
-        }*/
-      }
-      for (let i in serverList[serverID].users) {
+        mentions[i].addTo(judgesRoleID);
+      }*/
+    }
 
+    bot.sendMessage(channel, pointsMessage);
+    jsonfile.writeFile(pointsFile, serverList, function(err) {
+      if (err) {
+        console.error(err);
       }
-      bot.sendMessage(channel, pointsMessage);
-      jsonfile.writeFile(pointsFile, serverList, function(err) {
-        if (err) {
-          console.error(err);
-        }
-      });
     });
-  } else {
-    bot.sendMessage(channel, 'Please input a ' + pointName +
-    ' value for each user mentioned');
-  }
+  });
+} else if (pointsArray.length != mentions.length){
+  bot.sendMessage(channel, 'Please input a ' + pointName +
+  ' value for each user mentioned');
+}
 };
 
 var listPoint = function(server, channel, mentions) {
@@ -180,7 +205,6 @@ var listPoint = function(server, channel, mentions) {
         if (err) {
           console.error(err);
         }
-
       });
     });
   };
@@ -204,21 +228,7 @@ var listPoint = function(server, channel, mentions) {
     } else if (parsedMessage[0] == listPointCommand) {
       listPoint(msg.server, msg.channel, msg.mentions);
     } else if (parsedMessage[0] == help || msg.isMentioned(bot.user)) {
-      bot.sendMessage(msg.channel, 'Usage of this bot: \n Use ' +
-      givePointCommand + ' ' +
-      '<number of points> <@mention user> to give a user that number of ' +
-      pointName + 's. ' +
-      'The number of ' + pointName + 's argument is optional. \n Use ' +
-      listPointCommand + ' '+
-      '<@mention user> to list that user\'s points, or optionally ' +
-      'simply use ' + listPointCommand +
-      ' to list all users\'s ' + pointName + 's on the server, ' +
-      'sorted by number of ' + pointName + 's \n \n  ' +
-      'Admins only commands: \n Use !logout to cause the bot to go ' +
-      'offline. \n Use !restart to restart the bot. \n \n If an error ' +
-      'is encountered, please report it to sblaplace+pointbot@gmail.com \n' +
-      'To see the source code, please visit ' +
-      ' https://github.com/sblaplace/DiscordPointBot');
+      bot.sendMessage(msg.channel, helpMessage);
     } else if (parsedMessage[0] == logout) {
       bot.logout(function(error){
         if(error){
