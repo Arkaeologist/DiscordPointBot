@@ -153,230 +153,232 @@ var givePoint = function(server, channel, mentions, pointsArray) {
     }
   };
 
-  /* Lists the point values for a server of all users mentioned, or, if
-  *  no users are mentioned, then for all users on that server.
-  */
-  var listPoint = function(server, channel, mentions) {
+/* Lists the point values for a server of all users mentioned, or, if
+*  no users are mentioned, then for all users on that server.
+*/
+var listPoint = function(server, channel, mentions) {
 
-    // If there aren't any mentions, list everyone
-    if (mentions.length === 0) {
-      mentions = server.members;
+  // If there aren't any mentions, list everyone
+  if (mentions.length === 0) {
+    mentions = server.members;
+  }
+
+  var pointsMessage = '';
+  jsonfile.readFile(pointsFile, function(error, serverList) {
+    
+    // If there's an error, log it, and if not, log a success
+    if (error) {
+      console.error(error);
+    } else {
+      console.log('Success: Read points file');
     }
+    
+    // For every person mentioned
+    for (let mentionedIndex = 0; mentionedIndex < mentions.length;
+    mentionedIndex++) {
 
-    var pointsMessage = '';
-    jsonfile.readFile(pointsFile, function(error, serverList) {
+      // After the first mention, add a new line before every mention
+      if ( mentionedIndex > 0 ) {
+        pointsMessage = pointsMessage.concat('\n');
+      }
+
+      /* Add a line for this mention of the format
+      *  '<username>: <number of points> points'
+      *  e.g. 'sblaplace: 15 points'
+      */
+      pointsMessage =
+      pointsMessage.concat(serverList[server.id].
+        users[mentions[mentionedIndex].id].name +
+        ': ' + serverList[server.id].
+        users[mentions[mentionedIndex].id].points +
+        ' ' + pointName + 's ');
+    }
+    
+    
+    // Send a the completed points message, and log an error or success
+    bot.sendMessage(channel, pointsMessage, function (error) {
       if (error) {
         console.error(error);
       } else {
-        console.log('Success: Read points file');
+        console.log('Success: Sent points list');
+      }
+    });
+  });
+};
+
+//Updates the local jsonfile used to store Servers and Users
+var updateServers = function() {
+  jsonfile.readFile(pointsFile, function(error, serverList) {
+    var discordServerID;
+    var discordServerName;
+    var serverListEntry;
+    var memberID;
+    var memberName;
+
+    if (error) {
+      console.error(error);
+    } else {
+      console.log('Success: Read points file');
+    }
+
+    //For every server the bot has cached
+    for (let serverIndex = 0; serverIndex < bot.servers.length;
+    serverIndex++) {
+
+      //Assign the variable for that server's name and id
+      discordServerID = bot.servers[serverIndex].id;
+      discordServerName = bot.servers[serverIndex].name;
+
+      /* If the server isn't in the json file, add it. Otherwise,
+      *  update the name.
+      */
+      if ( !(discordServerID in serverList)) {
+        serverList[discordServerID] = new Server(discordServerName);
+      } else {
+        serverList[discordServerID].name = discordServerName;
       }
 
-      for (let mentionedIndex = 0; mentionedIndex < mentions.length;
-        mentionedIndex++) {
+      // Assign the variable for the Server object to be stored locally
+      serverListEntry = serverList[discordServerID];
 
-          // After the first mention, add a new line before every mention
-          if ( mentionedIndex > 0 ) {
-            pointsMessage = pointsMessage.concat('\n');
-          }
+      //For every cached member in the server
+      for (let userIndex = 0; userIndex <
+      bot.servers[serverIndex].members.length; userIndex++) {
 
-          /* Add a line for this mention of the format
-          *  '<username>: <number of points> points'
-          *  e.g. 'sblaplace: 15 points'
-          */
-          pointsMessage =
-          pointsMessage.concat(serverList[server.id].
-            users[mentions[mentionedIndex].id].name +
-            ': ' + serverList[server.id].
-            users[mentions[mentionedIndex].id].points +
-            ' ' + pointName + 's ');
-          }
-          bot.sendMessage(channel, pointsMessage, function (error) {
-            if (error) {
-              console.error(error);
-            } else {
-              console.log('Success: Sent points list');
-            }
-          });
-        });
-      };
+        //Assign their name and ID variables
+        memberID = bot.servers[serverIndex].
+        members[userIndex].id;
+        memberName = bot.servers[serverIndex].
+        members[userIndex].name;
 
-      //Updates the local jsonfile used to store Servers and Users
-      var updateServers = function() {
-        jsonfile.readFile(pointsFile, function(error, serverList) {
-          var discordServerID;
-          var discordServerName;
-          var serverListEntry;
-          var memberID;
-          var memberName;
+        /* If the user isn't in the points file,
+        *  add them, and if they are in it, then update their name
+        */
+        if ( !(memberID in serverListEntry.users)) {
+          serverListEntry.users[memberID] = new User(memberName);
+        } else {
+          serverListEntry.users[memberID].name = memberName;
+        }
+      }
+    }
 
-          if (error) {
-            console.error(error);
-          } else {
-            console.log('Success: Read points file');
-          }
+    //Write to the file
+    jsonfile.writeFile(pointsFile, serverList, function(error) {
+      if (error) {
+        console.error(error);
+      } else {
+        console.log('Success: Updated server list');
+      }
+    });
+  });
+};
 
-          //For every server the bot has cached
-          for (let serverIndex = 0; serverIndex < bot.servers.length;
-            serverIndex++) {
+//Decide which command to run
+var chooseCommand = function(msg) {
+  var parsedMessage = parseMessage(msg.content);
+  var msgRoles = [];
 
-              //Assign the variable for that server's name and id
-              discordServerID = bot.servers[serverIndex].id;
-              discordServerName = bot.servers[serverIndex].name;
+  // For every role the message sender has, add it's name to an array
+  for (let role in msg.server.rolesOfUser(msg.author)) {
+    msgRoles.push(msg.server.rolesOfUser(msg.author)[role].name);
+  }
 
-              /* If the server isn't in the json file, add it. Otherwise,
-              *  update the name.
-              */
-              if ( !(discordServerID in serverList)) {
-                serverList[discordServerID] = new Server(discordServerName);
-              } else {
-                serverList[discordServerID].name = discordServerName;
-              }
+  /* Based on the first word of the message, choose a command to run,
+  *  making sure that the user is allowed to use it. Additionally, send the
+  *  help message if the bot is mentioned.
+  */
+  if (parsedMessage[0] == givePointCommand && canUseGivePoint(msgRoles)) {
+    givePoint(msg.server, msg.channel, msg.mentions, parsedMessage);
+  } else if (parsedMessage[0] == listPointCommand) {
+    listPoint(msg.server, msg.channel, msg.mentions);
+  } else if (parsedMessage[0] == help || msg.isMentioned(bot.user)) {
+    bot.sendMessage(msg.channel, helpMessage, null, function(error, helpMessage) {
+      if (error) {
+        console.error(error);
+      } else {
+        console.log('Success: Logged in');
+      }
+    });
 
-              // Assign the variable for the Server object to be stored locally
-              serverListEntry = serverList[discordServerID];
-
-              //For every cached member in the server
-              for (let userIndex = 0; userIndex <
-                bot.servers[serverIndex].members.length; userIndex++) {
-
-                  //Assign their name and ID variables
-                  memberID = bot.servers[serverIndex].
-                  members[userIndex].id;
-                  memberName = bot.servers[serverIndex].
-                  members[userIndex].name;
-
-                  /* If the user isn't in the points file,
-                  *  add them, and if they are in it, then update their name
-                  */
-                  if ( !(memberID in serverListEntry.users)) {
-                    serverListEntry.users[memberID] = new User(memberName);
-                  } else {
-                    serverListEntry.users[memberID].name = memberName;
-                  }
-                }
-              }
-
-              //Write to the file
-              jsonfile.writeFile(pointsFile, serverList, function(error) {
-                if (error) {
-                  console.error(error);
-                } else {
-                  console.log('Success: Updated server list');
-                }
-              });
-            });
-          };
-
-          //Decide which command to run
-          var chooseCommand = function(msg) {
-            var parsedMessage = parseMessage(msg.content);
-            var msgRoles = [];
-
-            // For every role the message sender has, add it's name to an array
-            for (let role in msg.server.rolesOfUser(msg.author)) {
-              msgRoles.push(msg.server.rolesOfUser(msg.author)[role].name);
-            }
-
-            /* Based on the first word of the message, choose a command to run,
-            *  making sure that the user is allowed to use it. Additionally, send the
-            *  help message if the bot is mentioned.
-            */
-            if (parsedMessage[0] == givePointCommand &&
-              canUseGivePoint(msgRoles)) {
-                givePoint(msg.server, msg.channel, msg.mentions, parsedMessage);
-
-              } else if (parsedMessage[0] == listPointCommand) {
-                listPoint(msg.server, msg.channel, msg.mentions);
-
-              } else if (parsedMessage[0] == help || msg.isMentioned(bot.user)) {
-                bot.sendMessage(msg.channel, helpMessage, null, function(error, helpMessage) {
-                  if (error) {
-                    console.error(error);
-                  } else {
-                    console.log('Success: Logged in');
-                  }
-                });
-
-              } else if (parsedMessage[0] == logout) {
-                bot.logout(function(error) {
-
-                  if(error){
-                    console.error(error);
-                  } else {
-                    console.log('Log out successful');
-                  }
-
-                });
-
-              } else if (parsedMessage[0] == restart) {
-
-              }
-            };
-
-            //Export all functions for use in unit tests
-            exports.loadAuthDetails = loadAuthDetails;
-            exports.parseMessage = parseMessage;
-            exports.canUseGivePoint = canUseGivePoint;
-            exports.givePoint = givePoint;
-            exports.listPoint = listPoint;
-            exports.updateServers = updateServers;
-            exports.chooseCommand = chooseCommand;
-
-            var bot = new Discord.Client();
-
-            /* When the bot has successfully logged in, update the local points file,
-            *  log to the console that we're ready, and then set the bot's status to
-            *  online, and the game it's playing to a prompt for how to use the bot.
-            */
-            bot.on('ready', function(){
-              updateServers();
-
-              bot.setStatus('online', '!help for help', function (error) {
-                if (error) {
-                  console.error(error);
-                } else {
-                  console.log('Success: Set status');
-                  console.log('Success: Set up finished');
-                }
-              });
-            });
+  } else if (parsedMessage[0] == logout) {
+    bot.logout(function(error) {
+      if(error){
+        console.error(error);
+      } else {
+        console.log('Log out successful');
+      }
+    });
 
 
-            /* Listen for any event in which a new member or server is added, or has
-            *  changed it's name. On these events, update the locally stored points
-            *  file.
-            */
-            bot.on('serverMemberUpdated', function(){
-              updateServers();
-            });
+  } else if (parsedMessage[0] == restart) {
 
-            bot.on('serverNewMember', function(){
-              updateServers();
-            });
+  }
+};
 
-            bot.on('serverUpdated', function(){
-              updateServers();
-            });
+//Export all functions for use in unit tests
+exports.loadAuthDetails = loadAuthDetails;
+exports.parseMessage = parseMessage;
+exports.canUseGivePoint = canUseGivePoint;
+exports.givePoint = givePoint;
+exports.listPoint = listPoint;
+exports.updateServers = updateServers;
+exports.chooseCommand = chooseCommand;
 
-            bot.on('serverCreated', function(){
-              updateServers();
-            });
+var bot = new Discord.Client();
 
-            bot.on('serverCreated', function(){
-              updateServers();
-            });
+/* When the bot has successfully logged in, update the local points file,
+*  log to the console that we're ready, and then set the bot's status to
+*  online, and the game it's playing to a prompt for how to use the bot.
+*/
+bot.on('ready', function(){
+  updateServers();
 
-            // Listen for messages
-            bot.on('message', function(msg) {
-              chooseCommand(msg);
-            });
+  bot.setStatus('online', '!help for help', function (error) {
+    if (error) {
+      console.error(error);
+    } else {
+      console.log('Success: Set status');
+      console.log('Success: Set up finished');
+    }
+  });
+});
 
-            // Log in to Discord
-            bot.loginWithToken(loginToken = loadAuthDetails('loginToken'), null, null,
-            function(error, loginToken) {
-              if (error) {
-                console.error(error);
-              } else {
-                console.log('Success: Logged in');
-              }
-            });
+
+/* Listen for any event in which a new member or server is added, or has
+*  changed it's name. On these events, update the locally stored points
+*  file.
+*/
+bot.on('serverMemberUpdated', function(){
+  updateServers();
+});
+
+bot.on('serverNewMember', function(){
+  updateServers();
+});
+
+bot.on('serverUpdated', function(){
+  updateServers();
+});
+
+bot.on('serverCreated', function(){
+  updateServers();
+});
+
+bot.on('serverCreated', function(){
+  updateServers();
+});
+
+// Listen for messages
+bot.on('message', function(msg) {
+  chooseCommand(msg);
+});
+
+// Log in to Discord
+bot.loginWithToken(loginToken = loadAuthDetails('loginToken'), null, null,
+function(error, loginToken) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('Success: Logged in');
+  }
+});
