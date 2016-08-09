@@ -1,8 +1,12 @@
 /*jshint esversion: 6 */
 var Discord = require('discord.js');
 var jsonfile = require('jsonfile');
+var yaml = require('js-yaml');
+var fs   = require('fs');
+
 var pointsFile = './points.json';
 var authFile = require('./auth.json');
+
 var rolesWhichCanGivePoint = ['Admins', 'Mods', 'Judges'];
 var adminRole = 'Admins';
 var givePointCommand = '!givePoint';
@@ -165,14 +169,14 @@ var listPoint = function(server, channel, mentions) {
 
   var pointsMessage = '';
   jsonfile.readFile(pointsFile, function(error, serverList) {
-    
+
     // If there's an error, log it, and if not, log a success
     if (error) {
       console.error(error);
     } else {
       console.log('Success: Read points file');
     }
-    
+
     // For every person mentioned
     for (let mentionedIndex = 0; mentionedIndex < mentions.length;
     mentionedIndex++) {
@@ -193,8 +197,8 @@ var listPoint = function(server, channel, mentions) {
         users[mentions[mentionedIndex].id].points +
         ' ' + pointName + 's ');
     }
-    
-    
+
+
     // Send a the completed points message, and log an error or success
     bot.sendMessage(channel, pointsMessage, function (error) {
       if (error) {

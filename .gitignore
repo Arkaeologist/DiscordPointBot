@@ -40,5 +40,8 @@ jspm_packages
 auth.json
 points.json
 
+# Config files
+botconfig.yml
+
 # Unit tests containing sensitive information
 test/testloadauth.js
