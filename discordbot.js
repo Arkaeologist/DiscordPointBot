@@ -296,7 +296,7 @@ var chooseCommand = function(msg) {
   } else if (parsedMessage[0] == listPointCommand) {
     listPoint(msg.server, msg.channel, msg.mentions);
   } else if (parsedMessage[0] == help || msg.isMentioned(bot.user)) {
-    bot.sendMessage(msg.channel, helpMessage, null, function(error, helpMessage) {
+    bot.sendMessage(msg.channel, helpMessage, function(error) {
       if (error) {
         console.error(error);
       } else {
