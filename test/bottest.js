@@ -2,13 +2,9 @@ var expect = require("chai").expect;
 var discordBot = require("../discordbot");
 var Discord = require('discord.js');
 var jsonfile = require('jsonfile');
-var pointsFile = './points.json';
+var pointsFile = '../points.json';
 
-describe("Bot", function(){
-  /* describe("User List Builder", function() {
-    it("loads Cache of users from server", function() {
-    });
-  }); */
+describe("Discord Point Bot", function(){
   describe("#parseMessage()", function(){
     it("only accepts commands from array of commands", function() {
       var goodCommandArg = "!help";
@@ -67,6 +63,19 @@ describe("Bot", function(){
       var pointsArray = ['!givePoint', 5, 7];
       var mentionsArray = ['109134866209095680', '140740133648465920'];
       discordBot.givePoint(msg.server, msg.channel, msg.mentions, parsedMessage);
+    });
+  });
+  describe("#listPoint()", function() {
+    it("lists points of mentioned users", function() {
+
+    });
+  });
+  describe("#updateServers()", function() {
+    it("adds new servers to points file", function() {
+
+    });
+    it("adds new users to points file", function() {
+
     });
   });
 });
