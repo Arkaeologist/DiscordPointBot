@@ -4,7 +4,6 @@ var jsonfile = require('jsonfile');
 var yaml = require('js-yaml');
 var fs   = require('fs');
 var winston = require('winston');
-
 var pointsFile = './points.json';
 var authFile = require('./auth.json');
 
@@ -92,7 +91,7 @@ var parseMessage = function(msgContent) {
       var numericalPointValue = Number(msgContentArray[pointValue]);
       if (!(Number.isNaN(numericalPointValue)) &&
       numericalPointValue % 1 === 0 &&
-      msgContentArray[0] != listPointCommand) {
+      msgContentArray[0] !== listPointCommand) {
         msgContentArrayParsed.push(numericalPointValue);
       }
     }
@@ -146,7 +145,7 @@ var givePoint = function(server, channel, mentions, pointsArray) {
   });
 
     // Send message to chat asking for usable input
-  } else if (pointsArray.length != mentions.length){
+  } else if (pointsArray.length !== mentions.length){
     var pointsErrorMessage = 'Please input a ' + pointName +
     ' value for each user mentioned';
     bot.sendMessage(channel, pointsErrorMessage, function(error,
@@ -294,11 +293,11 @@ var chooseCommand = function(msg) {
   *  making sure that the user is allowed to use it. Additionally, send the
   *  help message if the bot is mentioned.
   */
-  if (parsedMessage[0] == givePointCommand && canUseGivePoint(msgRoles)) {
+  if (parsedMessage[0] === givePointCommand && canUseGivePoint(msgRoles)) {
     givePoint(msg.server, msg.channel, msg.mentions, parsedMessage);
-  } else if (parsedMessage[0] == listPointCommand) {
+  } else if (parsedMessage[0] === listPointCommand) {
     listPoint(msg.server, msg.channel, msg.mentions);
-  } else if (parsedMessage[0] == help || msg.isMentioned(bot.user)) {
+  } else if (parsedMessage[0] === help || msg.isMentioned(bot.user)) {
     bot.sendMessage(msg.channel, helpMessage, function(error) {
       if (error) {
         console.error(error);
@@ -307,7 +306,7 @@ var chooseCommand = function(msg) {
       }
     });
 
-  } else if (parsedMessage[0] == logout) {
+  } else if (parsedMessage[0] === logout) {
     bot.logout(function(error) {
       if(error){
         console.error(error);
@@ -317,7 +316,7 @@ var chooseCommand = function(msg) {
     });
 
 
-  } else if (parsedMessage[0] == restart) {
+  } else if (parsedMessage[0] === restart) {
 
   }
 };
