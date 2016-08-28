@@ -46,6 +46,14 @@ Server = function(servername){
   this.name = servername;
 };
 
+var logError = function (error, successMessage) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log(successMessage);
+  }
+};
+
 var loadAuthDetails = function(detailKey) {
   return authFile[detailKey];
 };
@@ -133,14 +141,8 @@ var givePoint = function(server, channel, mentions, pointsArray) {
           console.log('Success: Sent give point message');
         }
       });
-      jsonfile.writeFile(pointsFile, serverList, function(error) {
-        if (error) {
-          console.error(error);
-        } else {
-          console.log('Success: Wrote points to file');
-        }
-      });
-    });
+    jsonfile.writeFile(pointsFile, serverList, logError(error, 'Success: Wrote points to file'));
+  });
 
     // Send message to chat asking for usable input
   } else if (pointsArray.length != mentions.length){
