@@ -128,8 +128,9 @@ var givePoint = function(server, channel, mentions, pointsArray) {
     // Write to file and message chat confirming points were given
     jsonfile.writeFile(pointsFile, serverList, function (error) {
       winston.error(error);
-      bot.sendMessage(channel, pointsMessage,
-        logAndProfile(error, 'givePoint'));
+      bot.sendMessage(channel, pointsMessage, function(error) {
+          logAndProfile(error, 'givePoint');
+        });
     });
   });
 
@@ -138,7 +139,9 @@ var givePoint = function(server, channel, mentions, pointsArray) {
   else if (pointsArray.length !== mentions.length){
     var pointsErrorMessage = 'Please input a ' + pointName +
     ' value for each user mentioned';
-    bot.sendMessage(channel, pointsErrorMessage, logAndProfile(error, 'givePoint'));
+    bot.sendMessage(channel, pointsErrorMessage, function(error) {
+      logAndProfile(error, 'givePoint');
+    });
   }
 };
 
@@ -146,25 +149,18 @@ var givePoint = function(server, channel, mentions, pointsArray) {
 *  no users are mentioned, then for all users on that server.
 */
 var listPoint = function(server, channel, mentions) {
-
+  winston.profile('listPoint');
   // If there aren't any mentions, list everyone
   if (mentions.length === 0) {
     mentions = server.members;
   }
 
-  var pointsMessage = '';
-  jsonfile.readFile(pointsFile, function(error, serverList) {
-
-    // If there's an error, log it, and if not, log a success
-    if (error) {
-      console.error(error);
-    } else {
-      console.log('Success: Read points file');
-    }
-
-    // For every person mentioned
-    for (let mentionedIndex = 0; mentionedIndex < mentions.length;
-    mentionedIndex++) {
+var pointsMessage = '';
+jsonfile.readFile(pointsFile, function(error, serverList) {
+  winston.error(error);
+  // For every person mentioned
+  for (let mentionedIndex = 0; mentionedIndex < mentions.length;
+  mentionedIndex++) {
 
       // After the first mention, add a new line before every mention
       if ( mentionedIndex > 0 ) {
@@ -185,18 +181,15 @@ var listPoint = function(server, channel, mentions) {
 
 
     // Send a the completed points message, and log an error or success
-    bot.sendMessage(channel, pointsMessage, function (error) {
-      if (error) {
-        console.error(error);
-      } else {
-        console.log('Success: Sent points list');
-      }
+    bot.sendMessage(channel, pointsMessage, function(error) {
+      logAndProfile(error, 'listPoint');
     });
   });
 };
 
 //Updates the local jsonfile used to store Servers and Users
 var updateServers = function() {
+  winston.profile('updateServers');
   jsonfile.readFile(pointsFile, function(error, serverList) {
     var discordServerID;
     var discordServerName;
@@ -204,11 +197,7 @@ var updateServers = function() {
     var memberID;
     var memberName;
 
-    if (error) {
-      console.error(error);
-    } else {
-      console.log('Success: Read points file');
-    }
+    winston.error(error);
 
     //For every server the bot has cached
     for (let serverIndex = 0; serverIndex < bot.servers.length;
@@ -253,11 +242,7 @@ var updateServers = function() {
 
     //Write to the file
     jsonfile.writeFile(pointsFile, serverList, function(error) {
-      if (error) {
-        console.error(error);
-      } else {
-        console.log('Success: Updated server list');
-      }
+      logAndProfile(error, 'updateServers');
     });
   });
 };
@@ -281,26 +266,15 @@ var chooseCommand = function(msg) {
   } else if (parsedMessage[0] === listPointCommand) {
     listPoint(msg.server, msg.channel, msg.mentions);
   } else if (parsedMessage[0] === help || msg.isMentioned(bot.user)) {
+    winston.profile('helpMessage');
     bot.sendMessage(msg.channel, helpMessage, function(error) {
-      if (error) {
-        console.error(error);
-      } else {
-        console.log('Success: Logged in');
-      }
+      logAndProfile(error, 'helpMessage');
     });
-
   } else if (parsedMessage[0] === logout) {
+    winston.profile('logout');
     bot.logout(function(error) {
-      if(error){
-        console.error(error);
-      } else {
-        console.log('Log out successful');
-      }
+      logAndProfile(error, 'logout');
     });
-
-
-  } else if (parsedMessage[0] === restart) {
-
   }
 };
 
@@ -321,14 +295,9 @@ var bot = new Discord.Client();
 */
 bot.on('ready', function(){
   updateServers();
-
-  bot.setStatus('online', '!help for help', function (error) {
-    if (error) {
-      console.error(error);
-    } else {
-      console.log('Success: Set status');
-      console.log('Success: Set up finished');
-    }
+  winston.profile('setStatus');
+  bot.setStatus('online', '!help for help', function(error) {
+    logAndProfile(error, 'setStatus');
   });
 });
 
@@ -363,11 +332,11 @@ bot.on('message', function(msg) {
 });
 
 // Log in to Discord
-bot.loginWithToken(loginToken = loadAuthDetails('loginToken'), null, null,
-function(error, loginToken) {
-  if (error) {
-    console.error(error);
-  } else {
-    console.log('Success: Logged in');
-  }
-});
+var login = function () {
+  winston.profile('login');
+  bot.loginWithToken(loginToken = loadAuthDetails('loginToken'), null, null, function(error) {
+    logAndProfile(error, 'login');
+  });
+};
+
+login();
