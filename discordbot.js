@@ -3,6 +3,7 @@ var Discord = require('discord.js');
 var jsonfile = require('jsonfile');
 var yaml = require('js-yaml');
 var fs   = require('fs');
+var winston = require('winston');
 
 var pointsFile = './points.json';
 var authFile = require('./auth.json');
