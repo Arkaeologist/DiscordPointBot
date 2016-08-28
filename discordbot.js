@@ -34,24 +34,21 @@ listPointCommand + ' '+
 
 
 // User class for use in storing point values
-User = function(username){
+User = function(username) {
   this.points = 0;
   this.name =  username;
 };
 
 // Server class for use in storing User
-Server = function(servername){
+Server = function(servername) {
   // Map Users to id values
   this.users = {};
   this.name = servername;
 };
 
-var logError = function (error, successMessage) {
-  if (error) {
-    console.error(error);
-  } else {
-    console.log(successMessage);
-  }
+var logAndProfile = function (error, profileName) {
+  winston.error(error);
+  winston.profile(profileName);
 };
 
 var loadAuthDetails = function(detailKey) {
@@ -111,6 +108,7 @@ var canUseGivePoint = function(roleArray) {
 };
 
 var givePoint = function(server, channel, mentions, pointsArray) {
+  winston.profile('givePoint');
   // pointsArray is an optional argument in the case of only one mention
   pointsArray = pointsArray.slice(1) || [1];
   var pointsMessage = '';
@@ -118,46 +116,31 @@ var givePoint = function(server, channel, mentions, pointsArray) {
   serverID = server.id;
   if (pointsArray.length === mentions.length) {
     jsonfile.readFile(pointsFile, function(error, serverList) {
-      if (error) {
-        console.error(error);
-      }
+      winston.error(error);
       for (let i in mentions) {
         userMentioned = serverList[server.id].users[mentions[i].id];
         userMentioned.points += pointsArray[i];
         pointsMessage = pointsMessage.concat('Gave ' + pointsArray[i] + ' ' +
         pointName + 's to ' +
         serverList[server.id].users[mentions[i].id].name + ' \n');
-        /*if (userMentioned.points >= 100) {
-        mentions[i].addTo(judgesRoleID);
-      }*/
     }
 
-    // Send message to chat confirming points were given
-    bot.sendMessage(channel, pointsMessage, function(error,
-      pointsMessage) {
-        if (error) {
-          console.error(error);
-        } else {
-          console.log('Success: Sent give point message');
-        }
-      });
-    jsonfile.writeFile(pointsFile, serverList, logError(error, 'Success: Wrote points to file'));
+    // Write to file and message chat confirming points were given
+    jsonfile.writeFile(pointsFile, serverList, function (error) {
+      winston.error(error);
+      bot.sendMessage(channel, pointsMessage,
+        logAndProfile(error, 'givePoint'));
+    });
   });
 
     // Send message to chat asking for usable input
-  } else if (pointsArray.length !== mentions.length){
+  }
+  else if (pointsArray.length !== mentions.length){
     var pointsErrorMessage = 'Please input a ' + pointName +
     ' value for each user mentioned';
-    bot.sendMessage(channel, pointsErrorMessage, function(error,
-      pointsErrorMessage) {
-        if (error) {
-          console.error(error);
-        } else {
-          console.log('Success: Sent points error message');
-        }
-      });
-    }
-  };
+    bot.sendMessage(channel, pointsErrorMessage, logAndProfile(error, 'givePoint'));
+  }
+};
 
 /* Lists the point values for a server of all users mentioned, or, if
 *  no users are mentioned, then for all users on that server.
