@@ -1,27 +1,16 @@
 # Discord Point Bot 
-----
-[![Travis branch](https://img.shields.io/travis/sblaplace/DiscordPointBot/master.svg?maxAge=2592000?style=flat-square)](https://travis-ci.org/sblaplace/DiscordPointBot.svg?branch=master)[![David](https://img.shields.io/david/sblaplace/discordpointbot.svg?maxAge=2592000?style=flat-square)](https://david-dm.org/sblaplace/DiscordPointBot)
 
-### What is this repository for? 
+[![Travis branch](https://img.shields.io/travis/sblaplace/DiscordPointBot/master.svg?style=flat-square)](https://travis-ci.org/sblaplace/DiscordPointBot.svg?branch=master)[![David](https://img.shields.io/david/sblaplace/discordpointbot.svg?style=flat-square)](https://david-dm.org/sblaplace/DiscordPointBot)[![GitHub release](https://img.shields.io/github/release/sblaplace/DiscordPointBot.svg?style=flat-square)](https://github.com/sblaplace/DiscordPointBot/tree/0.5.1)
 
-* A Discord bot which allows users to give others points
-* Version 0.5.1
+Discord bot for rewarding points to users, and listing awarded points. Supports configuration of which roles may give points, as well as what the points are called.
 
-### How do I get set up? 
+## Installation and Setup
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+* Download Discord Point Bot from this repository
+* Create an auth.json file, including the token for your Discord bot. See auth.json.example.
+* In discordbot.js, add the names of any roles you wish to be able to give points, and choose the name for your points and commands
+* Run `node discordbot.js`
 
-### Contribution guidelines
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to?
+## Questions about Development or Usage
 
 * `sblaplace` 
