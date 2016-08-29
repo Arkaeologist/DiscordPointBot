@@ -1,2 +1,27 @@
-# DiscordPointBot [![Build Status](https://travis-ci.org/sblaplace/DiscordPointBot.svg?branch=master)](https://travis-ci.org/sblaplace/DiscordPointBot) [![Dependency Status](https://dependencyci.com/github/sblaplace/DiscordPointBot/badge)](https://dependencyci.com/github/sblaplace/DiscordPointBot)
-A Discord bot, written in node.js using the discord.js module, allowing users or specific roles to distribute points to users as encouragement for good content and interaction. Please note that an error will be thrown if you do not include an auth.json file in the top level directory of the project, see auth.json.example for reference.
+# Discord Point Bot 
+----
+[![Travis branch](https://img.shields.io/travis/sblaplace/DiscordPointBot/master.svg?maxAge=2592000?style=flat-square)](https://travis-ci.org/sblaplace/DiscordPointBot.svg?branch=master)[![David](https://img.shields.io/david/sblaplace/discordpointbot.svg?maxAge=2592000?style=flat-square)](https://david-dm.org/sblaplace/DiscordPointBot)
+
+### What is this repository for? 
+
+* A Discord bot which allows users to give others points
+* Version 0.5.1
+
+### How do I get set up? 
+
+* Summary of set up
+* Configuration
+* Dependencies
+* Database configuration
+* How to run tests
+* Deployment instructions
+
+### Contribution guidelines
+
+* Writing tests
+* Code review
+* Other guidelines
+
+### Who do I talk to?
+
+* `sblaplace` 
