@@ -6,4 +6,5 @@ before_install:
   -in secrets.tar.enc -out secrets.tar -d
 - tar xvf secrets.tar
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - ./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec
+  - ./node_modules/.bin/codecov
