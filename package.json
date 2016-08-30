@@ -26,12 +26,15 @@
   },
   "homepage": "https://github.com/sblaplace/DiscordTokenBot#readme",
   "dependencies": {
-    "chai": "^3.5.0",
     "discord.js": "^8.0.0",
     "jsonfile": "^2.3.1",
-    "mocha": "^2.5.3",
     "require.js": "^1.0.0",
-    "js-yaml": "^3.6.1",
     "winston": "^2.2.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "codecov": "^1.0.1",
+    "istanbul": "^0.4.5",
+    "mocha": "^2.5.3"
   }
 }
