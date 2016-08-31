@@ -8,6 +8,7 @@ var pointsFile = './points.json';
 var authFile = require('./auth.json');
 var User = require('./user.js').User;
 var Server = require('./server.js').Server;
+var parseMessage = require('./parsemessage.js').parseMessage;
 
 var rolesWhichCanGivePoint = ['Admins', 'Mods', 'Judges'];
 var adminRole = 'Admins';
@@ -42,50 +43,6 @@ var logAndProfile = function (error, profileName) {
 
 var loadAuthDetails = function(detailKey) {
   return authFile[detailKey];
-};
-
-/* Takes a string, and returns an array with the first element as a string
-*  of the command, and the rest as all the numbers in the message, to be
-*  passed to givePoint()
-*/
-var parseMessage = function(msgContent) {
-  let msgContentArray = [];
-  let msgContentArrayParsed = [];
-  /* If the message only contains one word, and that word is a valid command,
-  *  return that in an array
-  */
-  if (msgContent.includes(' ') === false) {
-    msgContentArrayParsed.push(msgContent);
-    if (commands.includes(msgContentArray[0])) {
-      return msgContentArrayParsed;
-    }
-  }
-  msgContentArray = msgContent.split(' ');
-  return parseMultiWordMsg(msgContentArray);
-};
-
-/* Split the string of the content of the mssage on every space. The
-*  first item in the array is a command, and is checked against the
-*  array of commands to ensure this. If it isn't, then false is returned,
-*  so that the check later on in chooseCommand will work. Otherwise, the
-*  other items are then checked to make sure that they're a positive integer.
-*  If they are, they're put into the array which is returned.
-*/
-var parseMultiWordMsg = function(msgContentArray) {
-  let msgContentArrayParsed = [];
-  if (commands.includes(msgContentArray[0])) {
-    msgContentArrayParsed.push(msgContentArray[0]);
-    for (var pointValue in msgContentArray) {
-      var numericalPointValue = Number(msgContentArray[pointValue]);
-      if (!(Number.isNaN(numericalPointValue)) &&
-      numericalPointValue % 1 === 0 &&
-      msgContentArray[0] !== listPointCommand) {
-        msgContentArrayParsed.push(numericalPointValue);
-      }
-    }
-    return msgContentArrayParsed;
-  }
-  return false;
 };
 
 //Checks if a user has any roles that match roles that can give points
@@ -271,13 +228,12 @@ var chooseCommand = function(msg) {
 
 //Export all functions for use in unit tests
 exports.loadAuthDetails = loadAuthDetails;
-exports.parseMessage = parseMessage;
 exports.canUseGivePoint = canUseGivePoint;
 exports.givePoint = givePoint;
 exports.listPoint = listPoint;
 exports.updateServers = updateServers;
 exports.chooseCommand = chooseCommand;
-exports.parseMultiWordMsg = parseMultiWordMsg;
+exports.commands = commands;
 
 var bot = new Discord.Client();
 
