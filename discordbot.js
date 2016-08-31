@@ -6,6 +6,8 @@ var fs   = require('fs');
 var winston = require('winston');
 var pointsFile = './points.json';
 var authFile = require('./auth.json');
+var User = require('./user.js').User;
+var Server = require('./server.js').Server;
 
 var rolesWhichCanGivePoint = ['Admins', 'Mods', 'Judges'];
 var adminRole = 'Admins';
@@ -32,20 +34,6 @@ listPointCommand + ' '+
 'is encountered, please report it to sblaplace+pointbot@gmail.com \n' +
 'To see the source code, please visit ' +
 ' https://github.com/sblaplace/DiscordPointBot';
-
-
-// User class for use in storing point values
-User = function(username) {
-  this.points = 0;
-  this.name =  username;
-};
-
-// Server class for use in storing User
-Server = function(servername) {
-  // Map Users to id values
-  this.users = {};
-  this.name = servername;
-};
 
 var logAndProfile = function (error, profileName) {
   winston.error(error);
