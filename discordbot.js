@@ -289,6 +289,7 @@ exports.givePoint = givePoint;
 exports.listPoint = listPoint;
 exports.updateServers = updateServers;
 exports.chooseCommand = chooseCommand;
+exports.parseMultiWordMsg = parseMultiWordMsg;
 
 var bot = new Discord.Client();
 

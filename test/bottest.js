@@ -64,6 +64,14 @@ describe("Discord Point Bot", function(){
       discordBot.givePoint(msg.server, msg.channel, msg.mentions, parsedMessage);
     });
   });
+  describe('#parseMultiWordMsg()', function() {
+    it('returns correctly parsed content', function() {
+      var pointsArray = ['!givePoint', 5, '@user#1234'];
+      var parsedArray = discordBot.parseMultiWordMsg(pointsArray);
+      var expectedParsedArray = ['!givePoint', 5];
+      expect(parsedArray).to.deep.equal(expectedParsedArray);
+    });
+  });
   describe("#listPoint()", function() {
     it("lists points of mentioned users", function() {
 
