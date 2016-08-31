@@ -1,14 +1,14 @@
 /*jshint esversion: 6 */
 var Discord = require('discord.js');
 var jsonfile = require('jsonfile');
-var yaml = require('js-yaml');
-var fs   = require('fs');
 var winston = require('winston');
 var pointsFile = './points.json';
 var authFile = require('./auth.json');
 var User = require('./user.js').User;
 var Server = require('./server.js').Server;
 var parseMessage = require('./parsemessage.js').parseMessage;
+var givePoint = require('./points.js').givePoint;
+var listPoint = require('./points.js').listPoint;
 
 var rolesWhichCanGivePoint = ['Admins', 'Mods', 'Judges'];
 var adminRole = 'Admins';
@@ -37,7 +37,7 @@ listPointCommand + ' '+
 ' https://github.com/sblaplace/DiscordPointBot';
 
 var logAndProfile = function (error, profileName) {
-  winston.error(error);
+  if (error) winston.error(error);
   winston.profile(profileName);
 };
 
@@ -55,86 +55,6 @@ var canUseGivePoint = function(roleArray) {
   return false;
 };
 
-var givePoint = function(server, channel, mentions, pointsArray) {
-  winston.profile('givePoint');
-  // pointsArray is an optional argument in the case of only one mention
-  pointsArray = pointsArray.slice(1) || [1];
-  var pointsMessage = '';
-  var userMentioned;
-  serverID = server.id;
-  if (pointsArray.length === mentions.length) {
-    jsonfile.readFile(pointsFile, function(error, serverList) {
-      winston.error(error);
-      for (let i in mentions) {
-        userMentioned = serverList[server.id].users[mentions[i].id];
-        userMentioned.points += pointsArray[i];
-        pointsMessage = pointsMessage.concat('Gave ' + pointsArray[i] + ' ' +
-        pointName + 's to ' +
-        serverList[server.id].users[mentions[i].id].name + ' \n');
-    }
-
-    // Write to file and message chat confirming points were given
-    jsonfile.writeFile(pointsFile, serverList, function (error) {
-      winston.error(error);
-      bot.sendMessage(channel, pointsMessage, function(error) {
-          logAndProfile(error, 'givePoint');
-        });
-    });
-  });
-
-    // Send message to chat asking for usable input
-  }
-  else if (pointsArray.length !== mentions.length){
-    var pointsErrorMessage = 'Please input a ' + pointName +
-    ' value for each user mentioned';
-    bot.sendMessage(channel, pointsErrorMessage, function(error) {
-      logAndProfile(error, 'givePoint');
-    });
-  }
-};
-
-/* Lists the point values for a server of all users mentioned, or, if
-*  no users are mentioned, then for all users on that server.
-*/
-var listPoint = function(server, channel, mentions) {
-  winston.profile('listPoint');
-  // If there aren't any mentions, list everyone
-  if (mentions.length === 0) {
-    mentions = server.members;
-  }
-
-var pointsMessage = '';
-jsonfile.readFile(pointsFile, function(error, serverList) {
-  winston.error(error);
-  // For every person mentioned
-  for (let mentionedIndex = 0; mentionedIndex < mentions.length;
-  mentionedIndex++) {
-
-      // After the first mention, add a new line before every mention
-      if ( mentionedIndex > 0 ) {
-        pointsMessage = pointsMessage.concat('\n');
-      }
-
-      /* Add a line for this mention of the format
-      *  '<username>: <number of points> points'
-      *  e.g. 'sblaplace: 15 points'
-      */
-      pointsMessage =
-      pointsMessage.concat(serverList[server.id].
-        users[mentions[mentionedIndex].id].name +
-        ': ' + serverList[server.id].
-        users[mentions[mentionedIndex].id].points +
-        ' ' + pointName + 's ');
-    }
-
-
-    // Send a the completed points message, and log an error or success
-    bot.sendMessage(channel, pointsMessage, function(error) {
-      logAndProfile(error, 'listPoint');
-    });
-  });
-};
-
 //Updates the local jsonfile used to store Servers and Users
 var updateServers = function() {
   winston.profile('updateServers');
@@ -145,7 +65,7 @@ var updateServers = function() {
     var memberID;
     var memberName;
 
-    winston.error(error);
+    if (error) winston.error(error);
 
     //For every server the bot has cached
     for (let serverIndex = 0; serverIndex < bot.servers.length;
@@ -210,7 +130,12 @@ var chooseCommand = function(msg) {
   *  help message if the bot is mentioned.
   */
   if (parsedMessage[0] === givePointCommand && canUseGivePoint(msgRoles)) {
-    givePoint(msg.server, msg.channel, msg.mentions, parsedMessage);
+    givePoint(msg.server, msg.channel, msg.mentions, parsedMessage,
+      function() {
+        bot.sendMessage(channel, pointsMessage, function(error) {
+          logAndProfile(error, 'givePoint');
+        });
+      });
   } else if (parsedMessage[0] === listPointCommand) {
     listPoint(msg.server, msg.channel, msg.mentions);
   } else if (parsedMessage[0] === help || msg.isMentioned(bot.user)) {
@@ -229,8 +154,6 @@ var chooseCommand = function(msg) {
 //Export all functions for use in unit tests
 exports.loadAuthDetails = loadAuthDetails;
 exports.canUseGivePoint = canUseGivePoint;
-exports.givePoint = givePoint;
-exports.listPoint = listPoint;
 exports.updateServers = updateServers;
 exports.chooseCommand = chooseCommand;
 exports.commands = commands;
@@ -241,7 +164,7 @@ var bot = new Discord.Client();
 *  log to the console that we're ready, and then set the bot's status to
 *  online, and the game it's playing to a prompt for how to use the bot.
 */
-bot.on('ready', function(){
+bot.on('ready', function() {
   updateServers();
   winston.profile('setStatus');
   bot.setStatus('online', '!help for help', function(error) {
@@ -254,23 +177,8 @@ bot.on('ready', function(){
 *  changed it's name. On these events, update the locally stored points
 *  file.
 */
-bot.on('serverMemberUpdated', function(){
-  updateServers();
-});
-
-bot.on('serverNewMember', function(){
-  updateServers();
-});
-
-bot.on('serverUpdated', function(){
-  updateServers();
-});
-
-bot.on('serverCreated', function(){
-  updateServers();
-});
-
-bot.on('serverCreated', function(){
+bot.on('serverMemberUpdated' || 'serverNewMember' || 'serverUpdated' ||
+ 'serverCreated', function() {
   updateServers();
 });
 
