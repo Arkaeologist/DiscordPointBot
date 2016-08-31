@@ -14,6 +14,7 @@ var listPointCommand = '!listPoint';
 var help = '!help';
 var logout = '!logout';
 var restart = '!restart';
+var commands = [givePointCommand, listPointCommand, help, logout, restart];
 var pointName = 'point';
 var judgesRoleID = 'Judges';
 var helpMessage = 'Usage of this bot: \n Use ' +
@@ -60,10 +61,8 @@ var loadAuthDetails = function(detailKey) {
 *  passed to givePoint()
 */
 var parseMessage = function(msgContent) {
-  var commands = [givePointCommand, listPointCommand, help, logout, restart];
-  var msgContentArray = [];
-  var msgContentArrayParsed = [];
-
+  let msgContentArray = [];
+  let msgContentArrayParsed = [];
   /* If the message only contains one word, and that word is a valid command,
   *  return that in an array
   */
@@ -73,15 +72,19 @@ var parseMessage = function(msgContent) {
       return msgContentArrayParsed;
     }
   }
-
-  /* Split the string of the content of the mssage on every space. The
-  *  first item in the array is a command, and is checked against the
-  *  array of commands to ensure this. If it isn't, then false is returned,
-  *  so that the check later on in chooseCommand will work. Otherwise, the
-  *  other items are then checked to make sure that they're a positive integer.
-  *  If they are, they're put into the array which is returned.
-  */
   msgContentArray = msgContent.split(' ');
+  return parseMultiWordMsg(msgContentArray);
+};
+
+/* Split the string of the content of the mssage on every space. The
+*  first item in the array is a command, and is checked against the
+*  array of commands to ensure this. If it isn't, then false is returned,
+*  so that the check later on in chooseCommand will work. Otherwise, the
+*  other items are then checked to make sure that they're a positive integer.
+*  If they are, they're put into the array which is returned.
+*/
+var parseMultiWordMsg = function(msgContentArray) {
+  let msgContentArrayParsed = [];
   if (commands.includes(msgContentArray[0])) {
     msgContentArrayParsed.push(msgContentArray[0]);
     for (var pointValue in msgContentArray) {

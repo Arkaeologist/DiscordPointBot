@@ -17,7 +17,6 @@ describe("Discord Point Bot", function(){
     it("allows for !givePoint with numerical arguments", function() {
       var goodCommandArg = "!givePoint 5 <@140740133648465920>";
       var goodCommand = discordBot.parseMessage(goodCommandArg);
-      console.log(goodCommand);
       expect(goodCommand).to.deep.equal(["!givePoint", 5]);
     });
     it("allows for !givePoint with no arguments", function() {
