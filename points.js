@@ -1,14 +1,14 @@
+/*jshint esversion: 6 */
 var bot = require('./discordbot.js').bot;
 var winston = require('winston');
 
-/*jshint esversion: 6 */
 var givePoint = function(server, channel, mentions, pointsArray, callback) {
   winston.profile('givePoint');
   // pointsArray is an optional argument in the case of only one mention
   pointsArray = pointsArray.slice(1) || [1];
   serverID = server.id;
   if (pointsArray.length === mentions.length) {
-    savePoints(server, channel, mentions, pointsArray, callback);
+    savePoints(server, channel, mentions, pointsArray);
   }
   // Send message to chat asking for usable input
   else if (pointsArray.length !== mentions.length) {
@@ -16,7 +16,7 @@ var givePoint = function(server, channel, mentions, pointsArray, callback) {
   }
 };
 
-var makeErrorMessage = function() {
+var makeErrorMessage = function(channel) {
   var pointsErrorMessage = 'Please input a ' + pointName +
   ' value for each user mentioned';
   bot.sendMessage(channel, pointsErrorMessage, function(error) {
@@ -24,8 +24,7 @@ var makeErrorMessage = function() {
   });
 };
 
-var savePoints = function(server, channel, mentions, pointsArray,
-  callback) {
+var savePoints = function(server, channel, mentions, pointsArray) {
   var pointsMessage = '';
   var userMentioned;
   jsonfile.readFile(pointsFile, function(error, serverList) {
@@ -34,11 +33,16 @@ var savePoints = function(server, channel, mentions, pointsArray,
     // Write to file and message chat confirming points were given
     jsonfile.writeFile(pointsFile, serverList, function (error) {
       if (error) winston.error(error);
-      callback(error, channel, pointsMessage)
+      bot.sendMessage(channel, pointsErrorMessage, function(error) {
+        logAndProfile(error, 'givePoint');
+      });
     });
   });
 };
 
+var makeServerList = function() {
+
+};
 var makeSaveMessage = function(server, channel, mentions, pointsArray) {
   for (let i in mentions) {
     userMentioned = serverList[server.id].users[mentions[i].id];
