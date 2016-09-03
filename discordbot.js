@@ -157,6 +157,7 @@ exports.canUseGivePoint = canUseGivePoint;
 exports.updateServers = updateServers;
 exports.chooseCommand = chooseCommand;
 exports.commands = commands;
+exports.bot = bot;
 
 var bot = new Discord.Client();
 
