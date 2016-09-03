@@ -9,12 +9,14 @@ function logPointMsg(error) {
   logAndProfile(error, 'givePoint');
 }
 
-function makeServerList(serverList) {
+function addUserPoints(userMentioned, server, pointsArray, serverList) {
+  userMentioned = serverList[server.id].users[mentions[i].id];
+  userMentioned.points += pointsArray[i];
+}
+
+function makeServerList(server, channel, mentions, pointsArray) {
   let userMentioned;
-  for (let i in mentions) {
-    userMentioned = serverList[server.id].users[mentions[i].id];
-    userMentioned.points += pointsArray[i];
-  }
+  mentions.forEach(addUserPoints(userMentioned, server, pointsArray));
   return serverList;
 }
 
