@@ -19,10 +19,10 @@ var givePoint = function(server, channel, mentions, pointsArray, callback) {
 var sendErrorMessage = function(channel) {
   var pointsErrorMessage = 'Please input a ' + pointName +
   ' value for each user mentioned';
-  bot.sendMessage(channel, pointsErrorMessage, logSendErrorMsg(error));
+  bot.sendMessage(channel, pointsErrorMessage, logPointMsg(error));
 };
 
-var logSendErrorMsg = function(error) {
+var logPointMsg = function(error) {
   logAndProfile(error, 'givePoint');
 };
 
@@ -35,9 +35,7 @@ var savePoints = function(server, channel, mentions, pointsArray) {
     // Write to file and message chat confirming points were given
     jsonfile.writeFile(pointsFile, serverList, function (error) {
       if (error) winston.error(error);
-      bot.sendMessage(channel, pointsErrorMessage, function(error) {
-        logAndProfile(error, 'givePoint');
-      });
+      bot.sendMessage(channel, pointsErrorMessage, logPointMsg(error));
     });
   });
 };
@@ -45,6 +43,7 @@ var savePoints = function(server, channel, mentions, pointsArray) {
 var makeServerList = function() {
 
 };
+
 var makeSaveMessage = function(server, channel, mentions, pointsArray) {
   for (let i in mentions) {
     userMentioned = serverList[server.id].users[mentions[i].id];
