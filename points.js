@@ -1,3 +1,6 @@
+var bot = require('./discordbot.js').bot;
+var winston = require('winston');
+
 /*jshint esversion: 6 */
 var givePoint = function(server, channel, mentions, pointsArray, callback) {
   winston.profile('givePoint');
