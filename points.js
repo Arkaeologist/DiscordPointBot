@@ -16,12 +16,14 @@ var givePoint = function(server, channel, mentions, pointsArray, callback) {
   }
 };
 
-var makeErrorMessage = function(channel) {
+var sendErrorMessage = function(channel) {
   var pointsErrorMessage = 'Please input a ' + pointName +
   ' value for each user mentioned';
-  bot.sendMessage(channel, pointsErrorMessage, function(error) {
-    logAndProfile(error, 'givePoint');
-  });
+  bot.sendMessage(channel, pointsErrorMessage, logSendErrorMsg(error));
+};
+
+var logSendErrorMsg = function(error) {
+  logAndProfile(error, 'givePoint');
 };
 
 var savePoints = function(server, channel, mentions, pointsArray) {
