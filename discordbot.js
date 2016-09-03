@@ -36,14 +36,14 @@ listPointCommand + ' '+
 'To see the source code, please visit ' +
 ' https://github.com/sblaplace/DiscordPointBot';
 
-var logAndProfile = function (error, profileName) {
+function logAndProfile(error, profileName) {
   winston.error(error);
   winston.profile(profileName);
-};
+}
 
-var loadAuthDetails = function(detailKey) {
+function loadAuthDetails(detailKey) {
   return authFile[detailKey];
-};
+}
 
 //Checks if a user has any roles that match roles that can give points
 var canUseGivePoint = function(roleArray) {
