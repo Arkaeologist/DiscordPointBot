@@ -8,13 +8,17 @@ var givePoint = function(server, channel, mentions, pointsArray, callback) {
     savePoints(server, channel, mentions, pointsArray, callback);
   }
   // Send message to chat asking for usable input
-  else if (pointsArray.length !== mentions.length){
-    var pointsErrorMessage = 'Please input a ' + pointName +
-    ' value for each user mentioned';
-    bot.sendMessage(channel, pointsErrorMessage, function(error) {
-      logAndProfile(error, 'givePoint');
-    });
+  else if (pointsArray.length !== mentions.length) {
+    makeErrorMessage(channel);
   }
+};
+
+var makeErrorMessage = function() {
+  var pointsErrorMessage = 'Please input a ' + pointName +
+  ' value for each user mentioned';
+  bot.sendMessage(channel, pointsErrorMessage, function(error) {
+    logAndProfile(error, 'givePoint');
+  });
 };
 
 var savePoints = function(server, channel, mentions, pointsArray,
