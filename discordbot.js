@@ -1,26 +1,25 @@
-/*jshint esversion: 6 */
-var Discord = require('discord.js');
-var jsonfile = require('jsonfile');
-var yaml = require('js-yaml');
-var fs   = require('fs');
-var winston = require('winston');
-var pointsFile = './points.json';
-var authFile = require('./auth.json');
-var User = require('./user.js').User;
-var Server = require('./server.js').Server;
-var parseMessage = require('./parsemessage.js').parseMessage;
+const Discord = require('discord.js');
+const jsonfile = require('jsonfile');
+const yaml = require('js-yaml');
+const fs   = require('fs');
+const winston = require('winston');
+const pointsFile = './points.json';
+const authFile = require('./auth.json');
+const User = require('./user.js').User;
+const Server = require('./server.js').Server;
+const parseMessage = require('./parsemessage.js').parseMessage;
 
-var rolesWhichCanGivePoint = ['Admins', 'Mods', 'Judges'];
-var adminRole = 'Admins';
-var givePointCommand = '!givePoint';
-var listPointCommand = '!listPoint';
-var help = '!help';
-var logout = '!logout';
-var restart = '!restart';
-var commands = [givePointCommand, listPointCommand, help, logout, restart];
-var pointName = 'point';
-var judgesRoleID = 'Judges';
-var helpMessage = 'Usage of this bot: \n Use ' +
+const rolesWhichCanGivePoint = ['Admins', 'Mods', 'Judges'];
+const adminRole = 'Admins';
+const givePointCommand = '!givePoint';
+const listPointCommand = '!listPoint';
+const help = '!help';
+const logout = '!logout';
+const restart = '!restart';
+const commands = [givePointCommand, listPointCommand, help, logout, restart];
+const pointName = 'point';
+const judgesRoleID = 'Judges';
+const helpMessage = 'Usage of this bot: \n Use ' +
 givePointCommand + ' ' +
 '<number of points> <@mention user> to give a user that number of ' +
 pointName + 's. ' +
@@ -59,8 +58,8 @@ function givePoint(server, channel, mentions, pointsArray) {
   winston.profile('givePoint');
   // pointsArray is an optional argument in the case of only one mention
   pointsArray = pointsArray.slice(1) || [1];
-  var pointsMessage = '';
-  var userMentioned;
+  let pointsMessage = '';
+  let userMentioned;
   serverID = server.id;
   if (pointsArray.length === mentions.length) {
     jsonfile.readFile(pointsFile, function(error, serverList) {
@@ -85,7 +84,7 @@ function givePoint(server, channel, mentions, pointsArray) {
     // Send message to chat asking for usable input
   }
   else if (pointsArray.length !== mentions.length){
-    var pointsErrorMessage = 'Please input a ' + pointName +
+    let pointsErrorMessage = 'Please input a ' + pointName +
     ' value for each user mentioned';
     bot.sendMessage(channel, pointsErrorMessage, function(error) {
       logAndProfile(error, 'givePoint');
@@ -103,7 +102,7 @@ function listPoint(server, channel, mentions) {
     mentions = server.members;
   }
 
-var pointsMessage = '';
+let pointsMessage = '';
 jsonfile.readFile(pointsFile, function(error, serverList) {
   winston.error(error);
   // For every person mentioned
