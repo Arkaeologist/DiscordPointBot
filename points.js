@@ -1,12 +1,11 @@
-/*jshint esversion: 6 */
-const bot = require('./discordbot.js').bot;
+const bot = require('./discordbot').bot;
 const winston = require('winston');
 
-function givePoint(server, channel, mentions, pointsArray, callback) {
+function givePoint(server, channel, mentions, pointsArrayArg) {
   winston.profile('givePoint');
   // pointsArray is an optional argument in the case of only one mention
-  pointsArray = pointsArray.slice(1) || [1];
-  serverID = server.id;
+  let pointsArray = pointsArrayArg.slice(1) || [1];
+  let serverID = server.id;
   if (pointsArray.length === mentions.length) {
     savePoints(server, channel, mentions, pointsArray);
   }
@@ -84,10 +83,10 @@ function listMessage(server, channel, mentions) {
         *  e.g. 'sblaplace: 15 points'
         */
         pointsMessage =
-        pointsMessage.concat(serverList[server.id].
-          users[mentions[mentionedIndex].id].name +
-          ': ' + serverList[server.id].
-          users[mentions[mentionedIndex].id].points +
+        pointsMessage.concat(serverList[server.id]
+          .users[mentions[mentionedIndex].id].name +
+          ': ' + serverList[server.id]
+          .users[mentions[mentionedIndex].id].points +
           ' ' + pointName + 's ');
       }
 
