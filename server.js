@@ -3,7 +3,7 @@ class Server {
   constructor(servername) {
     this.users = {};
     this.name = servername;
-  } 
+  }
 }
 
 exports.Server = Server;
