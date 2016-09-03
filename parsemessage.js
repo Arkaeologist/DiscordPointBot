@@ -10,7 +10,7 @@ var commands = [givePointCommand, listPointCommand, help, logout, restart];
 *  of the command, and the rest as all the numbers in the message, to be
 *  passed to givePoint()
 */
-var parseMessage = function(msgContent) {
+function parseMessage(msgContent) {
   var msgContentArray = [];
   var msgContentArrayParsed = [];
   /* If the message only contains one word, and that word is a valid command,
@@ -21,7 +21,7 @@ var parseMessage = function(msgContent) {
   }
   msgContentArray = msgContent.split(' ');
   return parseMultiWordMsg(msgContentArray);
-};
+}
 
 /* Split the string of the content of the mssage on every space. The
 *  first item in the array is a command, and is checked against the
@@ -30,7 +30,7 @@ var parseMessage = function(msgContent) {
 *  other items are then checked to make sure that they're a positive integer.
 *  If they are, they're put into the array which is returned.
 */
-var parseMultiWordMsg = function(msgContentArray) {
+function parseMultiWordMsg(msgContentArray) {
   var msgContentArrayParsed = [];
   if (commands.includes(msgContentArray[0])) {
     msgContentArrayParsed.push(msgContentArray[0]);
@@ -45,7 +45,7 @@ var parseMultiWordMsg = function(msgContentArray) {
     return msgContentArrayParsed;
   }
   return false;
-};
+}
 
 exports.parseMultiWordMsg = parseMultiWordMsg;
 exports.parseMessage = parseMessage;

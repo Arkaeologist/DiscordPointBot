@@ -1,69 +1,50 @@
-/*jshint esversion: 6 */
-var Discord = require('discord.js');
-var jsonfile = require('jsonfile');
-var winston = require('winston');
-var pointsFile = './points.json';
-var authFile = require('./auth.json');
-var User = require('./user.js').User;
-var Server = require('./server.js').Server;
-var parseMessage = require('./parsemessage.js').parseMessage;
-var givePoint = require('./points.js').givePoint;
-var listPoint = require('./points.js').listPoint;
+const Discord = require('discord.js');
+const jsonfile = require('jsonfile');
+const winston = require('winston');
+const authFile = require('./auth.json');
+const User = require('./user').User;
+const Server = require('./server').Server;
+const parseMessage = require('./parsemessage').parseMessage;
 
-var rolesWhichCanGivePoint = ['Admins', 'Mods', 'Judges'];
-var adminRole = 'Admins';
-var givePointCommand = '!givePoint';
-var listPointCommand = '!listPoint';
-var help = '!help';
-var logout = '!logout';
-var restart = '!restart';
-var commands = [givePointCommand, listPointCommand, help, logout, restart];
-var pointName = 'point';
-var judgesRoleID = 'Judges';
-var helpMessage = 'Usage of this bot: \n Use ' +
-givePointCommand + ' ' +
-'<number of points> <@mention user> to give a user that number of ' +
-pointName + 's. ' +
-'The number of ' + pointName + 's argument is optional. \n Use ' +
-listPointCommand + ' '+
-'<@mention user> to list that user\'s points, or optionally ' +
-'simply use ' + listPointCommand +
-' to list all users\'s ' + pointName + 's on the server, ' +
-'sorted by number of ' + pointName + 's \n \n  ' +
-'Admins only commands: \n Use !logout to cause the bot to go ' +
-'offline. \n Use !restart to restart the bot. \n \n If an error ' +
-'is encountered, please report it to sblaplace+pointbot@gmail.com \n' +
-'To see the source code, please visit ' +
-' https://github.com/sblaplace/DiscordPointBot';
+const pointsFile = './points.json';
+const rolesWhichCanGivePoint = ['Admins', 'Mods', 'Judges'];
+const givePointCommand = '!givePoint';
+const listPointCommand = '!listPoint';
+const help = '!help';
+const logout = '!logout';
+const restart = '!restart';
+const commands = [givePointCommand, listPointCommand, help, logout, restart];
+const pointName = 'point';
+const helpMessage = `Usage of this bot: \n Use ${givePointCommand} <number of points> <@mention user> to give a user that number of ${pointName}s. The number of ${pointName}s argument is optional. \n Use ${listPointCommand} <@mention user> to list that user\'s points, or optionally simply use ' + ${listPointCommand} to list all users\'s ${pointName}s on the server, sorted by number of ${pointName}s \n \n Admins only commands: \n Use !logout to cause the bot to go offline. \n Use !restart to restart the bot. \n \n If an error is encountered, please report it to sblaplace+pointbot@gmail.com \n To see the source code, please visit https://github.com/sblaplace/DiscordPointBot1`;
 
-var logAndProfile = function (error, profileName) {
-  if (error) winston.error(error);
+function logAndProfile(error, profileName) {
+  winston.error(error);
   winston.profile(profileName);
-};
+}
 
-var loadAuthDetails = function(detailKey) {
+function loadAuthDetails(detailKey) {
   return authFile[detailKey];
-};
+}
 
-//Checks if a user has any roles that match roles that can give points
-var canUseGivePoint = function(roleArray) {
+// Checks if a user has any roles that match roles that can give points
+function canUseGivePoint(roleArray) {
   for (let role in rolesWhichCanGivePoint) {
     if (roleArray.includes(rolesWhichCanGivePoint[role])) {
       return true;
     }
   }
   return false;
-};
+}
 
 //Updates the local jsonfile used to store Servers and Users
-var updateServers = function() {
+function updateServers() {
   winston.profile('updateServers');
   jsonfile.readFile(pointsFile, function(error, serverList) {
-    var discordServerID;
-    var discordServerName;
-    var serverListEntry;
-    var memberID;
-    var memberName;
+    let discordServerID;
+    let discordServerName;
+    let serverListEntry;
+    let memberID;
+    let memberName;
 
     if (error) winston.error(error);
 
@@ -113,12 +94,12 @@ var updateServers = function() {
       logAndProfile(error, 'updateServers');
     });
   });
-};
+}
 
 //Decide which command to run
-var chooseCommand = function(msg) {
-  var parsedMessage = parseMessage(msg.content);
-  var msgRoles = [];
+function chooseCommand(msg) {
+  const parsedMessage = parseMessage(msg.content);
+  let msgRoles = [];
 
   // For every role the message sender has, add it's name to an array
   for (let role in msg.server.rolesOfUser(msg.author)) {
@@ -149,7 +130,7 @@ var chooseCommand = function(msg) {
       logAndProfile(error, 'logout');
     });
   }
-};
+}
 
 //Export all functions for use in unit tests
 exports.loadAuthDetails = loadAuthDetails;
@@ -159,7 +140,7 @@ exports.chooseCommand = chooseCommand;
 exports.commands = commands;
 exports.bot = bot;
 
-var bot = new Discord.Client();
+const bot = new Discord.Client();
 
 /* When the bot has successfully logged in, update the local points file,
 *  log to the console that we're ready, and then set the bot's status to
@@ -189,11 +170,11 @@ bot.on('message', function(msg) {
 });
 
 // Log in to Discord
-var login = function () {
+function login() {
   winston.profile('login');
   bot.loginWithToken(loginToken = loadAuthDetails('loginToken'), null, null, function(error) {
     logAndProfile(error, 'login');
   });
-};
+}
 
 login();
