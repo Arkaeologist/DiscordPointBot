@@ -46,16 +46,16 @@ function loadAuthDetails(detailKey) {
 }
 
 //Checks if a user has any roles that match roles that can give points
-var canUseGivePoint = function(roleArray) {
+function canUseGivePoint(roleArray) {
   for (let role in rolesWhichCanGivePoint) {
     if (roleArray.includes(rolesWhichCanGivePoint[role])) {
       return true;
     }
   }
   return false;
-};
+}
 
-var givePoint = function(server, channel, mentions, pointsArray) {
+function givePoint(server, channel, mentions, pointsArray) {
   winston.profile('givePoint');
   // pointsArray is an optional argument in the case of only one mention
   pointsArray = pointsArray.slice(1) || [1];
@@ -91,12 +91,12 @@ var givePoint = function(server, channel, mentions, pointsArray) {
       logAndProfile(error, 'givePoint');
     });
   }
-};
+}
 
 /* Lists the point values for a server of all users mentioned, or, if
 *  no users are mentioned, then for all users on that server.
 */
-var listPoint = function(server, channel, mentions) {
+function listPoint(server, channel, mentions) {
   winston.profile('listPoint');
   // If there aren't any mentions, list everyone
   if (mentions.length === 0) {
@@ -133,10 +133,10 @@ jsonfile.readFile(pointsFile, function(error, serverList) {
       logAndProfile(error, 'listPoint');
     });
   });
-};
+}
 
 //Updates the local jsonfile used to store Servers and Users
-var updateServers = function() {
+function updateServers() {
   winston.profile('updateServers');
   jsonfile.readFile(pointsFile, function(error, serverList) {
     var discordServerID;
@@ -193,10 +193,10 @@ var updateServers = function() {
       logAndProfile(error, 'updateServers');
     });
   });
-};
+}
 
 //Decide which command to run
-var chooseCommand = function(msg) {
+function chooseCommand(msg) {
   var parsedMessage = parseMessage(msg.content);
   var msgRoles = [];
 
@@ -224,7 +224,7 @@ var chooseCommand = function(msg) {
       logAndProfile(error, 'logout');
     });
   }
-};
+}
 
 //Export all functions for use in unit tests
 exports.loadAuthDetails = loadAuthDetails;
@@ -280,11 +280,11 @@ bot.on('message', function(msg) {
 });
 
 // Log in to Discord
-var login = function () {
+function login() {
   winston.profile('login');
   bot.loginWithToken(loginToken = loadAuthDetails('loginToken'), null, null, function(error) {
     logAndProfile(error, 'login');
   });
-};
+}
 
 login();
