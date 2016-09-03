@@ -1,14 +1,12 @@
 const Discord = require('discord.js');
 const jsonfile = require('jsonfile');
-const yaml = require('js-yaml');
-const fs   = require('fs');
 const winston = require('winston');
-const pointsFile = './points.json';
 const authFile = require('./auth.json');
-const User = require('./user.js').User;
-const Server = require('./server.js').Server;
-const parseMessage = require('./parsemessage.js').parseMessage;
+const User = require('./user').User;
+const Server = require('./server').Server;
+const parseMessage = require('./parsemessage').parseMessage;
 
+const pointsFile = './points.json';
 const rolesWhichCanGivePoint = ['Admins', 'Mods', 'Judges'];
 const adminRole = 'Admins';
 const givePointCommand = '!givePoint';
@@ -138,11 +136,11 @@ jsonfile.readFile(pointsFile, function(error, serverList) {
 function updateServers() {
   winston.profile('updateServers');
   jsonfile.readFile(pointsFile, function(error, serverList) {
-    var discordServerID;
-    var discordServerName;
-    var serverListEntry;
-    var memberID;
-    var memberName;
+    let discordServerID;
+    let discordServerName;
+    let serverListEntry;
+    let memberID;
+    let memberName;
 
     winston.error(error);
 
@@ -196,8 +194,8 @@ function updateServers() {
 
 //Decide which command to run
 function chooseCommand(msg) {
-  var parsedMessage = parseMessage(msg.content);
-  var msgRoles = [];
+  const parsedMessage = parseMessage(msg.content);
+  let msgRoles = [];
 
   // For every role the message sender has, add it's name to an array
   for (let role in msg.server.rolesOfUser(msg.author)) {
@@ -234,7 +232,7 @@ exports.updateServers = updateServers;
 exports.chooseCommand = chooseCommand;
 exports.commands = commands;
 
-var bot = new Discord.Client();
+const bot = new Discord.Client();
 
 /* When the bot has successfully logged in, update the local points file,
 *  log to the console that we're ready, and then set the bot's status to
