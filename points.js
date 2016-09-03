@@ -1,8 +1,8 @@
 /*jshint esversion: 6 */
-var bot = require('./discordbot.js').bot;
-var winston = require('winston');
+const bot = require('./discordbot.js').bot;
+const winston = require('winston');
 
-var givePoint = function(server, channel, mentions, pointsArray, callback) {
+function givePoint(server, channel, mentions, pointsArray, callback) {
   winston.profile('givePoint');
   // pointsArray is an optional argument in the case of only one mention
   pointsArray = pointsArray.slice(1) || [1];
@@ -16,19 +16,19 @@ var givePoint = function(server, channel, mentions, pointsArray, callback) {
   }
 };
 
-var sendErrorMessage = function(channel) {
-  var pointsErrorMessage = 'Please input a ' + pointName +
+function sendErrorMessage(channel) {
+  const pointsErrorMessage = 'Please input a ' + pointName +
   ' value for each user mentioned';
   bot.sendMessage(channel, pointsErrorMessage, logPointMsg(error));
 };
 
-var logPointMsg = function(error) {
+function logPointMsg(error) {
   logAndProfile(error, 'givePoint');
 };
 
-var savePoints = function(server, channel, mentions, pointsArray) {
-  var pointsMessage = '';
-  var userMentioned;
+function savePoints(server, channel, mentions, pointsArray) {
+  let pointsMessage = '';
+  let userMentioned;
   jsonfile.readFile(pointsFile, function(error, serverList) {
     if (error) winston.error(error);
     serverList = makeServerList(server, channel, mentions, pointsArray);
@@ -40,11 +40,11 @@ var savePoints = function(server, channel, mentions, pointsArray) {
   });
 };
 
-var makeServerList = function() {
+function makeServerList() {
 
 };
 
-var makeSaveMessage = function(server, channel, mentions, pointsArray) {
+function makeSaveMessage(server, channel, mentions, pointsArray) {
   for (let i in mentions) {
     userMentioned = serverList[server.id].users[mentions[i].id];
     userMentioned.points += pointsArray[i];
@@ -57,7 +57,7 @@ var makeSaveMessage = function(server, channel, mentions, pointsArray) {
 /* Lists the point values for a server of all users mentioned, or, if
 *  no users are mentioned, then for all users on that server.
 */
-var listPoint = function(server, channel, mentions) {
+function listPoint(server, channel, mentions) {
   winston.profile('listPoint');
   // If there aren't any mentions, list everyone
   if (mentions.length === 0) {
@@ -66,7 +66,7 @@ var listPoint = function(server, channel, mentions) {
   listMessage(server, channel, mentions);
 };
 
-var listMessage = function(server, channel, mentions) {
+function listMessage(server, channel, mentions) {
   var pointsMessage = '';
   jsonfile.readFile(pointsFile, function(error, serverList) {
     if (error) winston.error(error);
