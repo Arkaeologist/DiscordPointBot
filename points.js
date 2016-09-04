@@ -9,14 +9,15 @@ function logPointMsg(error) {
   logAndProfile(error, 'givePoint');
 }
 
-function addUserPoints(userMentioned, server, pointsArray, serverList) {
+function addUserPoints(server, pointsArray, serverList, mentions) {
+  let userMentioned;
   userMentioned = serverList[server.id].users[mentions[i].id];
   userMentioned.points += pointsArray[i];
 }
 
 function makeServerList(server, channel, mentions, pointsArray) {
-  let userMentioned;
-  mentions.forEach(addUserPoints(userMentioned, server, pointsArray));
+
+  mentions.forEach(addUserPoints(server, pointsArray));
   return serverList;
 }
 
@@ -32,13 +33,13 @@ function updateServerList(error, serverList) {
 
 function savePoints(server, channel, mentions, pointsArray) {
   jsonfile.readFile(pointsFile, updateServerList(error, serverList));
-};
+}
 
 function sendErrorMessage(channel) {
   const pointsErrorMessage = 'Please input a ' + pointName +
   ' value for each user mentioned';
   bot.sendMessage(channel, pointsErrorMessage, logPointMsg(error));
-};
+}
 
 function givePoint(server, channel, mentions, pointsArrayArg) {
   winston.profile('givePoint');
@@ -52,7 +53,7 @@ function givePoint(server, channel, mentions, pointsArrayArg) {
   else if (pointsArray.length !== mentions.length) {
     sendErrorMessage(channel);
   }
-};
+}
 
 
 
