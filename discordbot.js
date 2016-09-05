@@ -116,7 +116,7 @@ jsonfile.readFile(pointsFile, function(error, serverList) {
   });
 }
 
-//Updates the local jsonfile used to store Servers and Users
+// Updates the local jsonfile used to store Servers and Users
 function updateServers() {
   winston.profile('updateServers');
   jsonfile.readFile(pointsFile, function(error, serverList) {
@@ -128,11 +128,11 @@ function updateServers() {
 
     winston.error(error);
 
-    //For every server the bot has cached
+    // For every server the bot has cached
     for (let serverIndex = 0; serverIndex < bot.servers.length;
     serverIndex++) {
 
-      //Assign the variable for that server's name and id
+      // Assign the variable for that server's name and id
       discordServerID = bot.servers[serverIndex].id;
       discordServerName = bot.servers[serverIndex].name;
 
@@ -148,11 +148,11 @@ function updateServers() {
       // Assign the variable for the Server object to be stored locally
       serverListEntry = serverList[discordServerID];
 
-      //For every cached member in the server
+      // For every cached member in the server
       for (let userIndex = 0; userIndex <
       bot.servers[serverIndex].members.length; userIndex++) {
 
-        //Assign their name and ID variables
+        // Assign their name and ID variables
         memberID = bot.servers[serverIndex].
         members[userIndex].id;
         memberName = bot.servers[serverIndex].
@@ -169,14 +169,14 @@ function updateServers() {
       }
     }
 
-    //Write to the file
+    // Write to the file
     jsonfile.writeFile(pointsFile, serverList, function(error) {
       logAndProfile(error, 'updateServers');
     });
   });
 }
 
-//Decide which command to run
+// Decide which command to run
 function chooseCommand(msg) {
   const parsedMessage = parseMessage(msg.content);
   let msgRoles = [];
@@ -207,7 +207,7 @@ function chooseCommand(msg) {
   }
 }
 
-//Export all functions for use in unit tests
+// Export all functions for use in unit tests
 exports.loadAuthDetails = loadAuthDetails;
 exports.canUseGivePoint = canUseGivePoint;
 exports.givePoint = givePoint;
