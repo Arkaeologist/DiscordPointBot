@@ -15,7 +15,7 @@ const logout = '!logout';
 const restart = '!restart';
 const commands = [givePointCommand, listPointCommand, help, logout, restart];
 const pointName = 'point';
-const helpMessage = `Usage of this bot: \n Use ${givePointCommand} <number of points> <@mention user> to give a user that number of ${pointName}s. The number of ${pointName}s argument is optional. \n Use ${listPointCommand} <@mention user> to list that user\'s points, or optionally simply use ' + ${listPointCommand} to list all users\'s ${pointName}s on the server, sorted by number of ${pointName}s \n \n Admins only commands: \n Use !logout to cause the bot to go offline. \n Use !restart to restart the bot. \n \n If an error is encountered, please report it to sblaplace+pointbot@gmail.com \n To see the source code, please visit https://github.com/sblaplace/DiscordPointBot1`;
+const helpMessage = `Usage of this bot: \n Use ${givePointCommand} <number of points> <@mention user> to give a user that number of ${pointName}s. The number of ${pointName}s argument is optional. \n Use ${listPointCommand} <@mention user> to list that user\'s points, or optionally simply use ' + ${listPointCommand} to list all users\'s ${pointName}s on the server, sorted by number of ${pointName}s \n \n Admins only commands: \n Use !logout to cause the bot to go offline. \n Use !restart to restart the bot. \n \n If an error is encountered, please report it to sblaplace+pointbot@gmail.com \n To see the source code, please visit https://github.com/sblaplace/DiscordPointBot`;
 
 const token = process.env.POINT_TOKEN;
 const bot = new Discord.Client();
@@ -224,7 +224,7 @@ exports.token = token;
 bot.on('ready', function(){
   updateServers();
   winston.profile('setStatus');
-  bot.setStatus('online', '!help for help', function(error) {
+  bot.user.setStatus('online', '!help for help', function(error) {
     logAndProfile(error, 'setStatus');
   });
 });
