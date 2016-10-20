@@ -1,3 +1,4 @@
+'use strict';
 // User class for use in storing point values
 class User {
   constructor(username) {

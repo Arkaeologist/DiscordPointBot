@@ -1,3 +1,4 @@
+'use strict';
 var parseMessage = require('../parsemessage.js').parseMessage;
 var parseMultiWordMsg = require('../parsemessage.js').parseMultiWordMsg;
 var expect = require("chai").expect;

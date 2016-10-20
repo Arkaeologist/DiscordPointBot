@@ -1,3 +1,4 @@
+'use strict';
 // Server class for use in storing User
 class Server {
   constructor(servername) {

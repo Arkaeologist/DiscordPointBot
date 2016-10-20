@@ -1,3 +1,4 @@
+'use strict';
 var expect = require("chai").expect;
 var discordBot = require("../bot.js");
 var Discord = require('discord.js');
