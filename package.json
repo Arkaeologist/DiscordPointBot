@@ -1,8 +1,8 @@
 {
-  "name": "discordtokenbot",
+  "name": "pointbot",
   "version": "0.5.1",
   "description": "A bot that allows Discord users to give votes to quality content",
-  "main": "discordbot.js",
+  "main": "bot.js",
   "directories": {
     "test": "test"
   },
