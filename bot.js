@@ -1,11 +1,10 @@
 'use strict';
 const Discord = require('discord.js');
-const jsonfile = require('jsonfile');
 const winston = require('winston');
-const authFile = require('./auth.json');
 const User = require('./user').User;
 const Server = require('./server').Server;
 const parseMessage = require('./parsemessage').parseMessage;
+const jsonfile = require('jsonfile');
 
 const pointsFile = './points.json';
 const rolesWhichCanGivePoint = ['Admins', 'Mods', 'Judges'];
@@ -18,14 +17,14 @@ const commands = [givePointCommand, listPointCommand, help, logout, restart];
 const pointName = 'point';
 const helpMessage = `Usage of this bot: \n Use ${givePointCommand} <number of points> <@mention user> to give a user that number of ${pointName}s. The number of ${pointName}s argument is optional. \n Use ${listPointCommand} <@mention user> to list that user\'s points, or optionally simply use ' + ${listPointCommand} to list all users\'s ${pointName}s on the server, sorted by number of ${pointName}s \n \n Admins only commands: \n Use !logout to cause the bot to go offline. \n Use !restart to restart the bot. \n \n If an error is encountered, please report it to sblaplace+pointbot@gmail.com \n To see the source code, please visit https://github.com/sblaplace/DiscordPointBot1`;
 
+const token = process.env.POINT_TOKEN;
+const bot = new Discord.Client();
+
 function logAndProfile(error, profileName) {
   winston.error(error);
   winston.profile(profileName);
 }
 
-function loadAuthDetails(detailKey) {
-  return authFile[detailKey];
-}
 
 // Checks if a user has any roles that match roles that can give points
 function canUseGivePoint(roleArray) {
@@ -209,15 +208,14 @@ function chooseCommand(msg) {
 }
 
 // Export all functions for use in unit tests
-exports.loadAuthDetails = loadAuthDetails;
 exports.canUseGivePoint = canUseGivePoint;
 exports.givePoint = givePoint;
 exports.listPoint = listPoint;
 exports.updateServers = updateServers;
 exports.chooseCommand = chooseCommand;
 exports.commands = commands;
+exports.token = token;
 
-const bot = new Discord.Client();
 
 /* When the bot has successfully logged in, update the local points file,
 *  log to the console that we're ready, and then set the bot's status to
@@ -264,7 +262,7 @@ bot.on('message', function(msg) {
 // Log in to Discord
 function login() {
   winston.profile('login');
-  bot.login(loadAuthDetails('loginToken'), null, null, function(error) {
+  bot.login(token, null, null, function(error) {
     logAndProfile(error, 'login');
   });
 }
