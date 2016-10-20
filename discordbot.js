@@ -263,7 +263,7 @@ bot.on('message', function(msg) {
 // Log in to Discord
 function login() {
   winston.profile('login');
-  bot.loginWithToken(loadAuthDetails('loginToken'), null, null, function(error) {
+  bot.login(loadAuthDetails('loginToken'), null, null, function(error) {
     logAndProfile(error, 'login');
   });
 }
